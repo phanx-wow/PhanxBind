@@ -201,7 +201,11 @@ SpellBinder:SetScript("OnEvent", function(self)
 
 	self:UnregisterAllEvents()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:SetScript("OnEvent", self.StopBinding)
+	self:SetScript("OnEvent", function()
+		if self.bindingMode then
+			self:StopBinding()
+		end
+	end)
 end)
 
 function SpellBinder:StartBinding()
