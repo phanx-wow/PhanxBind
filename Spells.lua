@@ -260,7 +260,7 @@ hooksecurefunc("SpellBookFrame_UpdateSpells", function()
 end)
 
 SpellBookFrame:HookScript("OnHide", function()
-	if self.bindingMode then
-		self:StopBinding()
+	if SpellBinder.bindingMode then
+		SpellBinder:StopBinding()
 	end
 end)

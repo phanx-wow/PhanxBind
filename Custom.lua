@@ -1,6 +1,7 @@
 function ApplyMyBindings(silent)
 	ClearAllBindings()
 
+	-- Movement
 	SetBinding("E", "MOVEFORWARD")
 	SetBinding("CTRL-E", "TOGGLEAUTORUN")
 	SetBinding("BUTTON4", "TOGGLEAUTORUN")
@@ -13,25 +14,31 @@ function ApplyMyBindings(silent)
 	SetBinding("SHIFT-D", "TURNRIGHT")
 	SetBinding("SPACE", "JUMP")
 
+	-- Chat
 	SetBinding("ENTER", "OPENCHAT")
 	SetBinding("/", "OPENCHATSLASH")
 	SetBinding("SHIFT-R", "REPLY")
 
+	-- Actions
 	SetBinding("SHIFT-UP", "PREVIOUSACTIONPAGE")
 	SetBinding("SHIFT-MOUSEWHEELUP", "PREVIOUSACTIONPAGE")
 	SetBinding("SHIFT-DOWN", "NEXTACTIONPAGE")
 	SetBinding("SHIFT-MOUSEWHEELDOWN", "NEXTACTIONPAGE")
 
+	-- Targeting
 	SetBinding("TAB", "TARGETNEARESTENEMY")
 	SetBinding("SHIFT-TAB", "TARGETNEARESTFRIEND")
 
-	SetBinding("SHIFT-V", "NAMEPLATES")
-	SetBinding("CTRL-V", "FRIENDNAMEPLATES")
-
+	-- Attacking
 	SetBinding("T", "STARTATTACK")
 	SetBinding("SHIFT-T", "ASSISTTARGET")
 	SetBinding("ALT-T", "INTERACTTARGET")
 
+	-- Nameplates
+	SetBinding("SHIFT-V", "NAMEPLATES")
+	SetBinding("CTRL-V", "FRIENDNAMEPLATES")
+
+	-- UI Panels
 	SetBinding("ESCAPE", "TOGGLEGAMEMENU")
 	SetBinding("B", "OPENALLBAGS")
 	SetBinding("M", "TOGGLEWORLDMAP")
@@ -50,27 +57,31 @@ function ApplyMyBindings(silent)
 	SetBinding("SHIFT-F11", "TOGGLECHARACTER4")
 	SetBinding("F12", "TOGGLEACHIEVEMENT")
 
+	-- UI Toggles
 	SetBinding("ALT-Z", "TOGGLEUI")
 	SetBinding("CTRL-R", "TOGGLEFPS")
 	SetBinding("PRINTSCREEN", "SCREENSHOT")
 
+	-- Camera
 	SetBinding("MOUSEWHEELUP", "CAMERAZOOMIN")
 	SetBinding("MOUSEWHEELDOWN", "CAMERAZOOMOUT")
 
+	-- Vehicle Aim
 	SetBinding("CTRL-MOUSEWHEELUP", "VEHICLEAIMUP")
 	SetBinding("CTRL-MOUSEWHEELDOWN", "VEHICLEAIMDOWN")
 
-	SetBinding("`", "CLICK Squire2Button:LeftButton")
-	SetBinding("SHIFT-B", "BAGNON_BANK_TOGGLE")
-	SetBinding("ALT-CTRL-F", "GOFISH_TOGGLE")
-	SetBinding("ALT-SHIFT-F", "HYDRA_FOLLOW")
-	SetBinding("CTRL-F", "HYDRA_FOLLOW_ME")
-	SetBinding("I", "EXAMINER_TARGET")
-	SetBinding("ALT-I", "EXAMINER_MOUSEOVER")
-	SetBinding("ALT-SHIFT-L", "CLICK LevelFlightButton:LeftButton")
-	SetBinding("ALT-CTRL-R", "RECOUNT_TOGGLE_MAIN")
-	SetBinding("ALT-N", "NOTEBOOK_PANEL")
-	SetBinding("ALT-X", "CLICK CancelMyBuffsButton1:LeftButton")
+	-- Addons
+	SetBinding("`",				"CLICK Squire2Button:LeftButton")
+	SetBinding("SHIFT-B",		"BAGNON_BANK_TOGGLE")
+	SetBinding("ALT-CTRL-F",	"GOFISH_TOGGLE")
+	SetBinding("ALT-SHIFT-F",	"HYDRA_FOLLOW")
+	SetBinding("CTRL-F",		"HYDRA_FOLLOW_ME")
+	SetBinding("I",				"EXAMINER_TARGET")
+	SetBinding("ALT-I",			"EXAMINER_MOUSEOVER")
+	SetBinding("ALT-SHIFT-L",	"CLICK LevelFlightButton:LeftButton")
+	SetBinding("ALT-N",			"NOTEBOOK_PANEL")
+	SetBinding("ALT-CTRL-R",	"RECOUNT_TOGGLE_MAIN")
+--	SetBinding("ALT-X",			"CLICK CancelMyBuffsButton1:LeftButton")
 
 	if not silent then
 		print("Bindings applied.")
@@ -80,77 +91,92 @@ end
 function ApplyMyOverrideBindings(silent)
 	local _, c = UnitClass("player")
 	local _, r = UnitRace("player")
+	local ob = {
+		["ALT-Q"] = "MACRO QuestItem",
+		["ALT-`"] = "ITEM Hearthstone",
+	}
 
-	SetOverrideBinding(PhanxBindFrame, nil, "ALT-Q", "MACRO QuestItem")
-	SetOverrideBinding(PhanxBindFrame, nil, "ALT-`", "ITEM Hearthstone")
-
+	-- Racial Abilities
 	if r == "BloodElf" then
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADMINUS", "SPELL Arcane Torrent")
+		ob["NUMPADMINUS"] = "SPELL Arcane Torrent"
 	elseif r == "Orc" then
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADMINUS", "SPELL Blood Fury")
+		ob["NUMPADMINUS"] = "SPELL Blood Fury"
+	elseif r == "Tauren" then
+		ob["NUMPADMINUS"] = "SPELL War Stomp"
+	elseif r == "Troll" then
+		ob["NUMPADMINUS"] = "SPELL Berserking"
 	end
 
+	-- Class Abilities
 	if c == "DRUID" then
-		SetOverrideBinding(PhanxBindFrame, nil, "F1", "MACRO Bear")
-		SetOverrideBinding(PhanxBindFrame, nil, "F2", "MACRO Aquatic")
-		SetOverrideBinding(PhanxBindFrame, nil, "F3", "MACRO Cat")
-		SetOverrideBinding(PhanxBindFrame, nil, "F4", "MACRO Travel")
-		SetOverrideBinding(PhanxBindFrame, nil, "F5", "MACRO Flight")
-		SetOverrideBinding(PhanxBindFrame, nil, "C",  "MACRO Cure")
-		SetOverrideBinding(PhanxBindFrame, nil, "G",  "MACRO Interrupt")
-		SetOverrideBinding(PhanxBindFrame, nil, "Q",  "MACRO Q")
-		SetOverrideBinding(PhanxBindFrame, nil, "W",  "MACRO Fire")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD0", "MACRO Power")
+		-- Shapeshift Forms
+		ob["F1"] = "MACRO Bear"
+		ob["F2"] = "MACRO Aquatic"
+		ob["F3"] = "MACRO Cat"
+		ob["F4"] = "MACRO Travel"
+		ob["F5"] = "MACRO Flight"
+
+		ob["C"]  = "MACRO Cure"
+		ob["G"]  = "MACRO Interrupt"
+		ob["Q"]  = "MACRO Taunt"
+		ob["W"]  = "MACRO Fire"
+		ob["NUMPAD0"] = "MACRO Power"
 
 	elseif c == "MONK" then
-		SetOverrideBinding(PhanxBindFrame, nil, "C",  "MACRO Cure")
-		SetOverrideBinding(PhanxBindFrame, nil, "Q",  "SPELL Roll")
+		ob["C"] = "MACRO Cure"
+		ob["Q"] = "SPELL Roll"
 
 	elseif c == "SHAMAN" then
-		SetOverrideBinding(PhanxBindFrame, nil, "C",  "MACRO Cure")
-		SetOverrideBinding(PhanxBindFrame, nil, "G",  "SPELL Wind Shear")
-		SetOverrideBinding(PhanxBindFrame, nil, "O",  "SPELL Far Sight")
-		SetOverrideBinding(PhanxBindFrame, nil, "P",  "SPELL Water Walking")
-		SetOverrideBinding(PhanxBindFrame, nil, "W",  "MACRO Shield")
-		SetOverrideBinding(PhanxBindFrame, nil, "X",  "MACRO Hex")
-		SetOverrideBinding(PhanxBindFrame, nil, "Z",  "MACRO Bind")
-		SetOverrideBinding(PhanxBindFrame, nil, "ALT-`", "MACRO Home")
-		SetOverrideBinding(PhanxBindFrame, nil, "CTRL-`", "SPELL Ghost Wolf")
-		SetOverrideBinding(PhanxBindFrame, nil, "F1", "SPELL Earthbind Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "F2", "SPELL Searing Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "F3", "SPELL Healing Tide Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "F4", "SPELL Stormlash Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "F5", "SPELL Totemic Recall")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADDIVIDE", "SPELL Earth Elemental Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADMULTIPLY", "SPELL Fire Elemental Totem")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADPLUS", "SPELL Bloodlust")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADDECIMAL", "MACRO Defend")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD0", "MACRO Power")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD1", "SPELL Ascendance")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD2", "SPELL Spirit Walk")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD3", "SPELL Astral Shift")
+		ob["C"] = "MACRO Cure"
+		ob["W"] = "MACRO Shield"
+		ob["X"] = "MACRO Hex"
+		ob["Z"] = "MACRO Bind"
 
+		ob["ALT-`"]   = "MACRO Home"
+		ob["NUMPAD0"] = "MACRO Power"
+		ob["NUMPADDECIMAL"] = "MACRO Defend"
+
+		ob["NUMPADDIVIDE"] = "SPELL Earth Elemental Totem"
+		ob["NUMPADMULTIPLY"] = "SPELL Fire Elemental Totem"
+--[[
+		ob["G"] = "SPELL Wind Shear"
+		ob["O"] = "SPELL Far Sight"
+		ob["P"] = "SPELL Water Walking"
+		ob["CTRL-`"] = "SPELL Ghost Wolf"
+		ob["F1"] = "SPELL Earthbind Totem"
+		ob["F2"] = "SPELL Searing Totem"
+		ob["F3"] = "SPELL Healing Tide Totem"
+		ob["F4"] = "SPELL Stormlash Totem"
+		ob["F5"] = "SPELL Totemic Recall"
+		ob["NUMPADPLUS"] = "SPELL Bloodlust"
+		ob["NUMPAD1"] = "SPELL Ascendance"
+		ob["NUMPAD2"] = "SPELL Spirit Walk"
+		ob["NUMPAD3"] = "SPELL Astral Shift"
+]]
 	elseif c == "PALADIN" then
-		SetOverrideBinding(PhanxBindFrame, nil, "G", 		"MACRO Interrupt")
-		SetOverrideBinding(PhanxBindFrame, nil, "Q", 		"SPELL Reckoning")
+		ob["G"] = "MACRO Interrupt"
+--[[
+		ob["Q"] = "SPELL Reckoning"
 
-		SetOverrideBinding(PhanxBindFrame, nil, "F1",	"SPELL Righteous Fury")
-		SetOverrideBinding(PhanxBindFrame, nil, "F2",	"SPELL Seal of Truth")
-		SetOverrideBinding(PhanxBindFrame, nil, "F3",	"SPELL Seal of Righteousness")
-		SetOverrideBinding(PhanxBindFrame, nil, "F4",	"SPELL Seal of Insight")
+		ob["F1"] = "SPELL Righteous Fury"
+		ob["F2"] = "SPELL Seal of Truth"
+		ob["F3"] = "SPELL Seal of Righteousness"
+		ob["F4"] = "SPELL Seal of Insight"
 
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADMINUS", 	 "SPELL Avenging Wrath")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADPLUS", 	 "SPELL Holy Avenger")
+		ob["NUMPADMINUS"] = "SPELL Avenging Wrath"
+		ob["NUMPADPLUS"]  = "SPELL Holy Avenger"
 
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPADDECIMAL", "SPELL Ardent Defender")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD0", 		 "SPELL Guardian of Ancient Kings")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD3", 		 "SPELL Divine Protection")
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD2", 		 "SPELL Divine Shield")
-
-		SetOverrideBinding(PhanxBindFrame, nil, "NUMPAD6", 		 "SPELL Devotion Aura")
-
+		ob["NUMPADDECIMAL"] = "SPELL Ardent Defender"
+		ob["NUMPAD0"] = "SPELL Guardian of Ancient Kings"
+		ob["NUMPAD3"] = "SPELL Divine Protection"
+		ob["NUMPAD2"] = "SPELL Divine Shield"
+		ob["NUMPAD6"] = "SPELL Devotion Aura"
+]]
 	elseif c == "WARLOCK" then
-		SetOverrideBinding(PhanxBindFrame, nil, "T", "PETATTACK")
+		ob["T"] = "PETATTACK"
+		ob["G"] = "MACRO Teleport"
+		ob["W"] = "MACRO Soulshatter"
+		ob["NUMPADPLUS"] = "MACRO Power"
 --[[
 					  O		Unending Breath
 		              P		Eye of Kilrogg
@@ -174,6 +200,10 @@ function ApplyMyOverrideBindings(silent)
 		 NUMPADMULTIPLY		Summon Abyssal
 		   NUMPADDIVIDE		Summon Terrorguard
 --]]
+	end
+
+	for key, action in pairs(ob) do
+		SetOverrideBinding(PhanxBindFrame, nil, key, action)
 	end
 
 	if not silent then

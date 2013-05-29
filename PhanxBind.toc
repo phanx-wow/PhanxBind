@@ -1,11 +1,8 @@
-## Interface: 50200
+## Interface: 50300
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
 
 Utils.lua
 Custom.lua
 
+Macros.lua
 Spells.lua
-
-# BindCore.lua
-# BindMacros.lua
-# BindSpells.lua
