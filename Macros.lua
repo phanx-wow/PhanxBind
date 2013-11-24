@@ -211,7 +211,7 @@ MacroBinder:SetScript("OnEvent", function(self)
 		if not MacroFrame:IsVisible() then
 			return
 		end
-		--print("SpellBookFrame_UpdateSpells")
+		--print("MacroFrame_Update")
 		MacroBinder:UpdateButtons()
 	end)
 

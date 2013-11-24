@@ -1,4 +1,5 @@
-## Interface: 50300
+## Interface: 50400
+## Version: 5.4.1.wowi:revision
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
 
 Utils.lua

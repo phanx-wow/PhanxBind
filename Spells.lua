@@ -32,12 +32,16 @@ end
 
 local function GetButtonSpell(button)
 	local slot, slotType, slotID = SpellBook_GetSpellBookSlot(button)
-	return (GetSpellBookItemName(slot, SpellBookFrame.bookType))
+	if slot then
+		return (GetSpellBookItemName(slot, SpellBookFrame.bookType))
+	end
 end
 
 local function IsButtonPassive(button)
 	local slot, slotType, slotID = SpellBook_GetSpellBookSlot(button)
-	return IsPassiveSpell(slot, SpellBookFrame.bookType)
+	if slot then
+		return IsPassiveSpell(slot, SpellBookFrame.bookType)
+	end
 end
 
 local GetKeyText
