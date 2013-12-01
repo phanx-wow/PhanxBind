@@ -6,6 +6,8 @@ local macroBindButtons = {}
 local macroToKey, keyToMacro = {}, {}
 local MacroBinder = CreateFrame("Button", "PhanxMacroBinder", UIParent, "UIPanelButtonTemplate")
 
+_MTK, _KTM = macroToKey, keyToMacro
+
 function MacroBinder:BindMacro(macro, key)
 	--print("BindMacro", macro, key)
 	if not macro or not key then return end
@@ -173,28 +175,30 @@ end
 
 MacroBinder:RegisterEvent("PLAYER_LOGIN")
 MacroBinder:SetScript("OnEvent", function(self)
-	if event == "PLAYER_LOGIN" then
-		--print("Initialize")
-		local saved = PhanxBindMacros
-		for key, macro in pairs(saved) do
-			if GetMacroIndexByName(macro) > 0 then
-				-- Don't bind macros that don't exist.
-				self:BindMacro(macro, key)
-			end
+	--print("Initialize")
+	local saved = PhanxBindMacros
+	for key, macro in pairs(saved) do
+		if GetMacroIndexByName(macro) > 0 then
+			-- Don't bind macros that don't exist.
+			self:BindMacro(macro, key)
 		end
-		PhanxBindMacros = keyToMacro
 	end
+	PhanxBindMacros = keyToMacro
 
 	if not MacroFrame then
 		self:RegisterEvent("ADDON_LOADED")
 		return
 	end
 
+	MacroExitButton:SetWidth(70)
+	MacroNewButton:SetWidth(70)
+	MacroNewButton:SetPoint("BOTTOMRIGHT", -72, 4)
+
 	self:SetParent(MacroFrame)
 	self:ClearAllPoints()
-	self:SetPoint("BOTTOMLEFT", 94, 32)
-	self:SetHeight(28)
-	self:SetWidth(128)
+	self:SetPoint("BOTTOMLEFT", 81, 4)
+	self:SetHeight(22)
+	self:SetWidth(118)
 	self:SetText("Start Binding")
 
 	local i = 1
@@ -223,7 +227,7 @@ MacroBinder:SetScript("OnEvent", function(self)
 
 	self:UnregisterAllEvents()
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:SetScript("OnEvent", function()
+	self:SetScript("OnEvent", function(self)
 		if self.bindingMode then
 			self:StopBinding()
 		end

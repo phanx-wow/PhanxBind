@@ -127,22 +127,19 @@ function ApplyMyOverrideBindings(silent)
 		ob["Q"] = "SPELL Roll"
 
 	elseif c == "SHAMAN" then
-		ob["C"] = "MACRO Cure"
-		ob["W"] = "MACRO Shield"
-		ob["X"] = "MACRO Hex"
-		ob["Z"] = "MACRO Bind"
-
+--[[
 		ob["ALT-`"]   = "MACRO Home"
+		ob["W"] = "MACRO Shield"
+		ob["Z"] = "MACRO Bind"
+		ob["X"] = "MACRO Hex"
+		ob["C"] = "MACRO Cure"
 		ob["NUMPAD0"] = "MACRO Power"
 		ob["NUMPADDECIMAL"] = "MACRO Defend"
 
-		ob["NUMPADDIVIDE"] = "SPELL Earth Elemental Totem"
-		ob["NUMPADMULTIPLY"] = "SPELL Fire Elemental Totem"
---[[
+		ob["CTRL-`"] = "SPELL Ghost Wolf"
 		ob["G"] = "SPELL Wind Shear"
 		ob["O"] = "SPELL Far Sight"
 		ob["P"] = "SPELL Water Walking"
-		ob["CTRL-`"] = "SPELL Ghost Wolf"
 		ob["F1"] = "SPELL Earthbind Totem"
 		ob["F2"] = "SPELL Searing Totem"
 		ob["F3"] = "SPELL Healing Tide Totem"
@@ -152,6 +149,8 @@ function ApplyMyOverrideBindings(silent)
 		ob["NUMPAD1"] = "SPELL Ascendance"
 		ob["NUMPAD2"] = "SPELL Spirit Walk"
 		ob["NUMPAD3"] = "SPELL Astral Shift"
+		ob["NUMPADDIVIDE"] = "SPELL Earth Elemental Totem"
+		ob["NUMPADMULTIPLY"] = "SPELL Fire Elemental Totem"
 ]]
 	elseif c == "PALADIN" then
 		ob["G"] = "MACRO Interrupt"
@@ -178,12 +177,12 @@ function ApplyMyOverrideBindings(silent)
 		ob["W"] = "MACRO Soulshatter"
 		ob["NUMPADPLUS"] = "MACRO Power"
 --[[
-					  O		Unending Breath
-		              P		Eye of Kilrogg
+					    O		Unending Breath
+		             P		Eye of Kilrogg
 
 			          V		Enslave Demon
 			          X		Fear
-		              Z		Banish
+		             Z		Banish
 
 			    SHIFT-T		Demonic Circle: Teleport
 			ALT-SHIFT-T		Demonic Circle: Summon
@@ -191,14 +190,14 @@ function ApplyMyOverrideBindings(silent)
 			          W		Soulshatter
 			         F4		Ember Tap
 			         F5		Flames of Xoroth
-		        NUMPAD0		Unending Resolve
-		  NUMPADDECIMAL		Twilight Ward
+		        NUMPAD0	Unending Resolve
+		  NUMPADDECIMAL	Twilight Ward
 
-		              Q		Havoc
-		     NUMPADPLUS		Dark Soul: Instability
-		CTRL+NUMPADPLUS		Dark Intent
-		 NUMPADMULTIPLY		Summon Abyssal
-		   NUMPADDIVIDE		Summon Terrorguard
+		              Q	Havoc
+		     NUMPADPLUS	Dark Soul: Instability
+		CTRL+NUMPADPLUS	Dark Intent
+		 NUMPADMULTIPLY	Summon Abyssal
+		   NUMPADDIVIDE	Summon Terrorguard
 --]]
 	end
 
