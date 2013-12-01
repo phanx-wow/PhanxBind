@@ -54,7 +54,6 @@ do
 		["DIVIDE"]     = "/",
 		["DECIMAL"]    = ".",
 	}
-
 	function GetKeyText(key)
 		if not key then
 			return ""
@@ -71,13 +70,13 @@ do
 	local ignoreKeys = {
 		["BUTTON1"] = true,
 		["BUTTON2"] = true,
-		["UNKNOWN"] = true,
 		["LSHIFT"] = true,
 		["LCTRL"] = true,
 		["LALT"] = true,
 		["RSHIFT"] = true,
 		["RCTRL"] = true,
 		["RALT"] = true,
+		["UNKNOWN"] = true,
 	}
 
 	local function button_OnKeyDown(self, key)
