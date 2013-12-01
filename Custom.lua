@@ -241,7 +241,7 @@ end
 SetBinding("ESCAPE", "TOGGLEGAMEMENU")
 SetBinding("/", "OPENCHATSLASH")
 
-local f = CreateFrame("Frame")
+local f = CreateFrame("Frame", "PhanxBindFrame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
 	ApplyMyBindings(true)
