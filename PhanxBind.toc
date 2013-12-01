@@ -1,5 +1,14 @@
 ## Interface: 50400
 ## Version: 5.4.1.wowi:revision
+
+## Title: PhanxBind
+## Notes: Direct keybindings for spells and macros.
+## Author: Phanx
+## X-Email: addons@phanx.net
+## X-Copyright: Copyright (c) 2011-2013 Phanx. All rights reserved.
+## X-License: See the accompanying LICENSE file for details.
+## X-CompatibleLocales: deDE, enUS, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
+
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
 
 Utils.lua
