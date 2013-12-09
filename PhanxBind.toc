@@ -2,13 +2,13 @@
 ## Version: 5.4.1.wowi:revision
 
 ## Title: PhanxBind
-## Notes: Direct keybindings for spells and macros.
-## Notes-deDE: Direkttastenbelegung für Zauber und Makros.
+## Notes: Direct key bindings for spells and macros.
+## Notes-deDE: Direkttastenbelegungen für die Zauber und Makros.
 ## Notes-esES: Asignaciones de teclas directas para los hechizos y macros.
 ## Notes-esMX: Asignaciones de teclas directas para los hechizos y macros.
 ## Notes-frFR: Raccourcis directs pour les sorts et macros.
-## Notes-itIT: Combinazioni di tasti diretti per incantesimi e macro.
-## Notes-ptBR: Combinações de teclas diretas para feitiços e macros.
+## Notes-itIT: Assegnazioni di tasti diretti per incantesimi e macro.
+## Notes-ptBR: Teclas de atalho diretas para feitiços e macros.
 
 ## Author: Phanx
 ## X-Email: addons@phanx.net
@@ -17,9 +17,6 @@
 ## X-CompatibleLocales: deDE, enUS, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
-
-Utils.lua
-Custom.lua
 
 Macros.lua
 Spells.lua

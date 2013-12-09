@@ -6,8 +6,6 @@ local macroBindButtons = {}
 local macroToKey, keyToMacro = {}, {}
 local MacroBinder = CreateFrame("Button", "PhanxMacroBinder", UIParent, "UIPanelButtonTemplate")
 
-_MTK, _KTM = macroToKey, keyToMacro
-
 function MacroBinder:BindMacro(macro, key)
 	--print("BindMacro", macro, key)
 	if not macro or not key then return end
