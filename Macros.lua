@@ -1,4 +1,14 @@
+--[[--------------------------------------------------------------------
+	PhanxBind
+	Direct key bindings for spells and macros.
+	Copyright (c) 2011-2013 Phanx <addons@phanx.net>. All rights reserved.
+	See the accompanying README and LICENSE files for more information.
+----------------------------------------------------------------------]]
 -- TODO: Save bindings for global macros on a global basis.
+
+local _, ns = ...
+local GetKeyText = ns.GetKeyText
+local L = ns.L
 
 PhanxBindMacros = {}
 
@@ -32,36 +42,14 @@ function MacroBinder:UnbindMacro(macro)
 	return true
 end
 
+------------------------------------------------------------------------
+
 local function GetButtonMacro(button)
 	local name, icon, body = GetMacroInfo(MacroFrame.macroBase + button:GetID())
 	return name
 end
 
-local GetKeyText
-do
-	local displaySubs = {
-		["ALT%-"]      = "a",
-		["CTRL%-"]     = "c",
-		["SHIFT%-"]    = "s",
-		["BUTTON"]     = "m",
-		["MOUSEWHEEL"] = "w",
-		["NUMPAD"]     = "n",
-		["PLUS"]       = "+",
-		["MINUS"]      = "-",
-		["MULTIPLY"]   = "*",
-		["DIVIDE"]     = "/",
-		["DECIMAL"]    = ".",
-	}
-	function GetKeyText(key)
-		if not key then
-			return ""
-		end
-		for k, v in pairs(displaySubs) do
-			key = gsub(key, k, v)
-		end
-		return key
-	end
-end
+------------------------------------------------------------------------
 
 local CreateBinder
 do
@@ -196,7 +184,7 @@ MacroBinder:SetScript("OnEvent", function(self)
 	self:SetPoint("BOTTOMLEFT", 81, 4)
 	self:SetHeight(22)
 	self:SetWidth(118)
-	self:SetText("Start Binding")
+	self:SetText(L["Start Binding"])
 
 	local i = 1
 	while _G["MacroButton"..i] do
@@ -235,7 +223,7 @@ function MacroBinder:StartBinding()
 	self.bindingMode = true
 	print("Macro binding mode on.")
 	self:GetHighlightTexture():SetDrawLayer("OVERLAY")
-	self:SetText("Stop Binding")
+	self:SetText(L["Stop Binding"])
 	self:UpdateButtons()
 end
 
@@ -243,7 +231,7 @@ function MacroBinder:StopBinding()
 	self.bindingMode = nil
 	print("Macro binding mode off.")
 	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
-	self:SetText("Start Binding")
+	self:SetText(L["Start Binding"])
 	self:UpdateButtons()
 end
 

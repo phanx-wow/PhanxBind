@@ -1,3 +1,14 @@
+--[[--------------------------------------------------------------------
+	PhanxBind
+	Direct key bindings for spells and macros.
+	Copyright (c) 2011-2013 Phanx <addons@phanx.net>. All rights reserved.
+	See the accompanying README and LICENSE files for more information.
+----------------------------------------------------------------------]]
+
+local _, ns = ...
+local GetKeyText = ns.GetKeyText
+local L = ns.L
+
 PhanxBindSpells = {}
 
 local spellBindButtons, spellBindFlyoutButtons = {}, {}
@@ -30,6 +41,8 @@ function SpellBinder:UnbindSpell(spell)
 	return true
 end
 
+------------------------------------------------------------------------
+
 local function GetButtonSpell(button)
 	if strmatch(button:GetName(), "^SpellFlyoutButton") then
 		return button.spellName
@@ -54,32 +67,7 @@ local function IsButtonFlyout(button)
 	end
 end
 
-local GetKeyText
-do
-	local displaySubs = {
-		["ALT%-"]      = "a",
-		["CTRL%-"]     = "c",
-		["SHIFT%-"]    = "s",
-		["BUTTON"]     = "m",
-		["MOUSEWHEEL"] = "w",
-		["NUMPAD"]     = "n",
-		["PLUS"]       = "+",
-		["MINUS"]      = "-",
-		["MULTIPLY"]   = "*",
-		["DIVIDE"]     = "/",
-		["DECIMAL"]    = ".",
-	}
-
-	function GetKeyText(key)
-		if not key then
-			return ""
-		end
-		for k, v in pairs(displaySubs) do
-			key = gsub(key, k, v)
-		end
-		return key
-	end
-end
+------------------------------------------------------------------------
 
 local CreateBinder
 do

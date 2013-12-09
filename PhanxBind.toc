@@ -18,5 +18,7 @@
 
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
 
+Common.lua
+
 Macros.lua
 Spells.lua
