@@ -15,29 +15,39 @@ local spellBindButtons, spellBindFlyoutButtons = {}, {}
 local spellToKey, keyToSpell = {}, {}
 local SpellBinder = CreateFrame("Button", "PhanxSpellBinder", SpellBookFrame, "UIPanelButtonTemplate")
 
-function SpellBinder:BindSpell(spell, key)
-	--print("BindSpell", spell, key)
-	if not spell or not key then return end
-	if spellToKey[spell] then
-		self:UnbindSpell(spell)
+function SpellBinder:BindSpell(id, key)
+	--print("BindSpell", id, key)
+	if not id or not key then return end
+
+	if spellToKey[id] then
+		self:UnbindSpell(id)
 	end
-	if keyToSpell[key] and keyToSpell[key] ~= spell then
+	if keyToSpell[key] and keyToSpell[key] ~= id then
 		self:UnbindSpell(keyToSpell[key])
 	end
-	spellToKey[spell], keyToSpell[key] = key, spell
-	SetOverrideBinding(self, nil, key, "SPELL "..spell)
+
+	spellToKey[id], keyToSpell[key] = key, id
+
+	local spell = GetSpellInfo(id)
+	SetOverrideBindingSpell(self, nil, key, spell)
 	--print("BIND SPELL", spell, "->", key)
+
 	return true
 end
 
-function SpellBinder:UnbindSpell(spell)
-	--print("UnbindSpell", spell)
-	if not spell then return end
-	local key = spellToKey[spell]
+function SpellBinder:UnbindSpell(id)
+	--print("UnbindSpell", id)
+	if not id then return end
+
+	local key = spellToKey[id]
 	if not key then return end
-	spellToKey[spell], keyToSpell[key] = nil, nil
+
+	spellToKey[id], keyToSpell[key] = nil, nil
+
+	local spell = GetSpellInfo(id)
 	SetOverrideBinding(self, nil, key, nil)
 	--print("UNBIND SPELL", spell, "->", key)
+
 	return true
 end
 
@@ -45,11 +55,12 @@ end
 
 local function GetButtonSpell(button)
 	if strmatch(button:GetName(), "^SpellFlyoutButton") then
-		return button.spellName
+		return button.spellID
 	end
 	local slot, slotType, slotID = SpellBook_GetSpellBookSlot(button)
 	if slot then
-		return (GetSpellBookItemName(slot, SpellBookFrame.bookType))
+		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType)
+		return id
 	end
 end
 
@@ -146,6 +157,7 @@ do
 			local binder = spellBindFlyoutButtons[i]
 			binder:EnableKeyboard(false)
 		end
+		GameTooltip:Hide()
 	end
 
 	local button_backdrop = {
@@ -192,8 +204,7 @@ end
 SpellBinder:RegisterEvent("PLAYER_LOGIN")
 SpellBinder:SetScript("OnEvent", function(self)
 	--print("Initialize")
-	local saved = PhanxBindSpells
-	for key, spell in pairs(saved) do
+	for key, spell in pairs(PhanxBindSpells) do
 		self:BindSpell(spell, key)
 	end
 	PhanxBindSpells = keyToSpell
@@ -202,7 +213,7 @@ SpellBinder:SetScript("OnEvent", function(self)
 	self:SetPoint("BOTTOMLEFT", 94, 32)
 	self:SetHeight(28)
 	self:SetWidth(128)
-	self:SetText("Start Binding")
+	self:SetText(L["Start Binding"])
 
 	local i = 1
 	while _G["SpellButton"..i] do
@@ -225,17 +236,17 @@ end)
 
 function SpellBinder:StartBinding()
 	self.bindingMode = true
-	print("Spellbook binding mode on.")
+	--print("Spellbook binding mode on.")
 	self:GetHighlightTexture():SetDrawLayer("OVERLAY")
-	self:SetText("Stop Binding")
+	self:SetText(L["Stop Binding"])
 	self:UpdateButtons()
 end
 
 function SpellBinder:StopBinding()
 	self.bindingMode = nil
-	print("Spellbook binding mode off.")
+	--print("Spellbook binding mode off.")
 	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
-	self:SetText("Start Binding")
+	self:SetText(L["Start Binding"])
 	self:UpdateButtons()
 end
 

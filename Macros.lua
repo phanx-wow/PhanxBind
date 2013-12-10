@@ -26,7 +26,7 @@ function MacroBinder:BindMacro(macro, key)
 		self:UnbindMacro(keyToMacro[key])
 	end
 	macroToKey[macro], keyToMacro[key] = key, macro
-	SetOverrideBinding(self, nil, key, "MACRO "..macro)
+	SetOverrideBindingMacro(self, nil, key, macro)
 	--print("BIND MACRO", macro, "->", key)
 	return true
 end
@@ -159,20 +159,21 @@ end
 ------------------------------------------------------------------------
 
 MacroBinder:RegisterEvent("PLAYER_LOGIN")
-MacroBinder:SetScript("OnEvent", function(self)
-	--print("Initialize")
-	local saved = PhanxBindMacros
-	for key, macro in pairs(saved) do
-		if GetMacroIndexByName(macro) > 0 then
-			-- Don't bind macros that don't exist.
-			self:BindMacro(macro, key)
+MacroBinder:SetScript("OnEvent", function(self, event)
+	if event == "PLAYER_LOGIN" then
+		--print("Initialize")
+		local saved = PhanxBindMacros
+		for key, macro in pairs(saved) do
+			if GetMacroIndexByName(macro) > 0 then
+				-- Don't bind macros that don't exist.
+				self:BindMacro(macro, key)
+			end
 		end
+		PhanxBindMacros = keyToMacro
 	end
-	PhanxBindMacros = keyToMacro
 
 	if not MacroFrame then
-		self:RegisterEvent("ADDON_LOADED")
-		return
+		return self:RegisterEvent("ADDON_LOADED")
 	end
 
 	MacroExitButton:SetWidth(70)
@@ -221,7 +222,7 @@ end)
 
 function MacroBinder:StartBinding()
 	self.bindingMode = true
-	print("Macro binding mode on.")
+	--print("Macro binding mode on.")
 	self:GetHighlightTexture():SetDrawLayer("OVERLAY")
 	self:SetText(L["Stop Binding"])
 	self:UpdateButtons()
@@ -229,7 +230,7 @@ end
 
 function MacroBinder:StopBinding()
 	self.bindingMode = nil
-	print("Macro binding mode off.")
+	--print("Macro binding mode off.")
 	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
 	self:SetText(L["Start Binding"])
 	self:UpdateButtons()
