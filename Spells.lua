@@ -25,6 +25,9 @@ function SpellBinder:BindSpell(id, key)
 	if keyToSpell[key] and keyToSpell[key] ~= id then
 		self:UnbindSpell(keyToSpell[key])
 	end
+	if PhanxBindMacros[key] then
+		PhanxMacroBinder:UnbindMacro(PhanxBindMacros[key])
+	end
 
 	spellToKey[id], keyToSpell[key] = key, id
 
@@ -212,7 +215,7 @@ SpellBinder:SetScript("OnEvent", function(self)
 	self:ClearAllPoints()
 	self:SetPoint("BOTTOMLEFT", 94, 32)
 	self:SetHeight(28)
-	self:SetWidth(128)
+	self:SetWidth(200)
 	self:SetText(L["Start Binding"])
 
 	local i = 1

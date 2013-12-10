@@ -10,24 +10,24 @@ local _, ns = ...
 ------------------------------------------------------------------------
 
 local L = {
-	["Start Binding"] = "Start Binding",
-	["Stop Binding"] = "Stop Binding",
+	["Start Binding"]  = "Start Binding",
+	["Stop Binding"]   = "Stop Binding",
 }
 if GetLocale() == "deDE" then
 	L["Start Binding"] = "Zuweisen beginnen"
-	L["Stop Binding"] = "Zuweisen halten"
+	L["Stop Binding"]  = "Zuweisen halten"
 elseif strsub(GetLocale(), 1, 2) == "es" then
-	L["Start Binding"] = "Comienzar a asignar"
-	L["Stop Binding"] = "Dejar de asignar"
+	L["Start Binding"] = "Comienzar asignar"
+	L["Stop Binding"]  = "Dejar asignar"
 elseif GetLocale() == "frFR" then
-	L["Start Binding"] = "Commencer à associer"
-	L["Stop Binding"] = "Arrêter à associer"
+	L["Start Binding"] = "Commencer associer"
+	L["Stop Binding"]  = "Arrêter associer"
 elseif GetLocale() == "itIT" then
-	L["Start Binding"] = "Iniziare a assegnare"
-	L["Stop Binding"] = "Smettere di assegnare"
+	L["Start Binding"] = "Inizia assegnare"
+	L["Stop Binding"]  = "Smetti assegnare"
 elseif GetLocale() == "ptBR" then
 	L["Start Binding"] = "Começar a vincular"
-	L["Stop Binding"] = "Parar de vincular"
+	L["Stop Binding"]  = "Parar de vincular"
 end
 ns.L = L
 

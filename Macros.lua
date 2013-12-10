@@ -19,26 +19,35 @@ local MacroBinder = CreateFrame("Button", "PhanxMacroBinder", UIParent, "UIPanel
 function MacroBinder:BindMacro(macro, key)
 	--print("BindMacro", macro, key)
 	if not macro or not key then return end
+
 	if macroToKey[macro] then
 		self:UnbindMacro(macro)
 	end
 	if keyToMacro[key] and keyToMacro[key] ~= macro then
 		self:UnbindMacro(keyToMacro[key])
 	end
+	if PhanxBindSpells[key] then
+		PhanxSpellBinder:UnbindSpell(PhanxBindSpells[key])
+	end
+
 	macroToKey[macro], keyToMacro[key] = key, macro
 	SetOverrideBindingMacro(self, nil, key, macro)
 	--print("BIND MACRO", macro, "->", key)
+
 	return true
 end
 
 function MacroBinder:UnbindMacro(macro)
 	--print("UnbindMacro", macro)
 	if not macro then return end
+
 	local key = macroToKey[macro]
 	if not key then return end
+
 	macroToKey[macro], keyToMacro[key] = nil, nil
 	SetOverrideBinding(self, nil, key, nil)
 	--print("UNBIND MACRO", macro, "->", key)
+
 	return true
 end
 
