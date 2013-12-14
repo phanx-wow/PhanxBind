@@ -208,6 +208,12 @@ SpellBinder:RegisterEvent("PLAYER_LOGIN")
 SpellBinder:SetScript("OnEvent", function(self)
 	--print("Initialize")
 	for key, spell in pairs(PhanxBindSpells) do
+		if type(spell) == "string" then
+			PhanxBindSpells[key] = nil
+			print("Removed old binding:", key, "->", spell)
+		end
+	end
+	for key, spell in pairs(PhanxBindSpells) do
 		self:BindSpell(spell, key)
 	end
 	PhanxBindSpells = keyToSpell
@@ -262,7 +268,7 @@ function SpellBinder:UpdateButtons()
 		end
 		return
 	end
-	--print("UpdateButtons")
+	print("UpdateButtons")
 	for i = 1, #spellBindButtons do
 		local binder = spellBindButtons[i]
 		local button = binder:GetParent()
