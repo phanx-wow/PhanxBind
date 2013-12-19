@@ -86,15 +86,18 @@ end
 local CreateBinder
 do
 	local ignoreKeys = {
+		["LALT"] = true,
+		["LCTRL"] = true,
+		["LSHIFT"] = true,
+		["RALT"] = true,
+		["RCTRL"] = true,
+		["RSHIFT"] = true,
+		["UNKNOWN"] = true,
+	}
+
+	local ignoreKeysNoMod = {
 		["BUTTON1"] = true,
 		["BUTTON2"] = true,
-		["UNKNOWN"] = true,
-		["LSHIFT"] = true,
-		["LCTRL"] = true,
-		["LALT"] = true,
-		["RSHIFT"] = true,
-		["RCTRL"] = true,
-		["RALT"] = true,
 	}
 
 	local function button_OnKeyDown(self, key)
@@ -104,7 +107,7 @@ do
 			if SpellBinder:UnbindSpell(spell) then
 				self.text:SetText("")
 			end
-		elseif not ignoreKeys[key] then
+		elseif not ignoreKeys[key] and (not ignoreKeysNoMod[key] or IsModifierKeyDown()) then
 			if IsShiftKeyDown() then
 				key = "SHIFT-" .. key
 			end
@@ -121,16 +124,15 @@ do
 		end
 	end
 
+	local buttonToKey = {
+		["LeftButton"] = "BUTTON1",
+		["RightButton"] = "BUTTON2",
+		["MiddleButton"] = "BUTTON3",
+	}
+
 	local function button_OnMouseDown(self, button)
 		--print(self:GetID(), "OnMouseDown", button)
-		if button == "LeftButton" or button == "RightButton" then
-			return
-		elseif button == "MiddleButton" then
-			button = "BUTTON3"
-		else
-			button = strupper(button)
-		end
-		button_OnKeyDown(self, button)
+		button_OnKeyDown(self, buttonToKey[button] or strupper(button))
 	end
 
 	local function button_OnEnter(self)
@@ -209,8 +211,15 @@ SpellBinder:SetScript("OnEvent", function(self)
 	--print("Initialize")
 	for key, spell in pairs(PhanxBindSpells) do
 		if type(spell) == "string" then
-			PhanxBindSpells[key] = nil
-			print("Removed old binding:", key, "->", spell)
+			local link = GetSpellLink(link)
+			local id = link and strmatch(link, "spell:(%d+)")
+			if id then
+				PhanxBindSpells[key] = id
+				print("Updated old binding:", key, "->", spell, id)
+			else
+				PhanxBindSpells[key] = nil
+				print("Removed old binding:", key, "->", spell)
+			end
 		end
 	end
 	for key, spell in pairs(PhanxBindSpells) do
@@ -268,7 +277,7 @@ function SpellBinder:UpdateButtons()
 		end
 		return
 	end
-	print("UpdateButtons")
+	--print("UpdateButtons")
 	for i = 1, #spellBindButtons do
 		local binder = spellBindButtons[i]
 		local button = binder:GetParent()

@@ -23,11 +23,14 @@ elseif GetLocale() == "frFR" then
 	L["Start Binding"] = "Commencer associer"
 	L["Stop Binding"]  = "Arrêter associer"
 elseif GetLocale() == "itIT" then
-	L["Start Binding"] = "Inizia assegnare"
-	L["Stop Binding"]  = "Smetti assegnare"
+	L["Start Binding"] = "Iniziare assegnare"
+	L["Stop Binding"]  = "Smettere assegnare"
 elseif GetLocale() == "ptBR" then
 	L["Start Binding"] = "Começar a vincular"
 	L["Stop Binding"]  = "Parar de vincular"
+elseif GetLocale() == "ruRU" then
+	L["Start Binding"] = "Начать назначения"
+	L["Stop Binding"]  = "Прекратить назначения"
 end
 ns.L = L
 

@@ -63,15 +63,18 @@ end
 local CreateBinder
 do
 	local ignoreKeys = {
+		["LALT"] = true,
+		["LCTRL"] = true,
+		["LSHIFT"] = true,
+		["RALT"] = true,
+		["RCTRL"] = true,
+		["RSHIFT"] = true,
+		["UNKNOWN"] = true,
+	}
+
+	local ignoreKeysNoMod = {
 		["BUTTON1"] = true,
 		["BUTTON2"] = true,
-		["LSHIFT"] = true,
-		["LCTRL"] = true,
-		["LALT"] = true,
-		["RSHIFT"] = true,
-		["RCTRL"] = true,
-		["RALT"] = true,
-		["UNKNOWN"] = true,
 	}
 
 	local function button_OnKeyDown(self, key)
@@ -81,7 +84,7 @@ do
 			if MacroBinder:UnbindMacro(macro) then
 				self.text:SetText("")
 			end
-		elseif not ignoreKeys[key] then
+		elseif not ignoreKeys[key] and (not ignoreKeysNoMod[key] or IsModifierKeyDown()) then
 			if IsShiftKeyDown() then
 				key = "SHIFT-" .. key
 			end
@@ -98,16 +101,15 @@ do
 		end
 	end
 
+	local buttonToKey = {
+		["LeftButton"] = "BUTTON1",
+		["RightButton"] = "BUTTON2",
+		["MiddleButton"] = "BUTTON3",
+	}
+
 	local function button_OnMouseDown(self, button)
 		--print(self:GetID(), "OnMouseDown", button)
-		if button == "LeftButton" or button == "RightButton" then
-			return
-		elseif button == "MiddleButton" then
-			button = "BUTTON3"
-		else
-			button = strupper(button)
-		end
-		button_OnKeyDown(self, button)
+		button_OnKeyDown(self, buttonToKey[button] or strupper(button))
 	end
 
 	local function button_OnEnter(self)
