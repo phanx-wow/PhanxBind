@@ -292,8 +292,8 @@ hooksecurefunc("EditMacro", function(id, name, icon, body, ...)
 	for macro, key in pairs(macroToKey) do
 		if GetMacroIndexByName(macro) == 0 then
 			print("EditMacro", macro, "=>", name)
-			self:UnbindMacro(macro)
-			self:BindMacro(name, key)
+			MacroBinder:UnbindMacro(macro)
+			MacroBinder:BindMacro(name, key)
 			break
 		end
 	end

@@ -3,7 +3,7 @@
 
 ## Title: PhanxBind
 ## Notes: Direct key bindings for spells and macros.
-## Notes-deDE: Direkttastenbelegungen für die Zauber und Makros.
+## Notes-deDE: Direkttastenbelegungen für Zauber und Makros.
 ## Notes-esES: Asignaciones de teclas directas para hechizos y macros.
 ## Notes-esMX: Asignaciones de teclas directas para hechizos y macros.
 ## Notes-frFR: Raccourcis directs pour les sorts et macros.
