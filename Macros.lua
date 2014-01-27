@@ -6,28 +6,27 @@
 ----------------------------------------------------------------------]]
 -- TODO: Save bindings for global macros on a global basis.
 
-local _, ns = ...
-local GetKeyText = ns.GetKeyText
-local L = ns.L
+local ADDON, Addon = ...
+local L = Addon.L
+local GetKeyText = Addon.GetKeyText
 
 PhanxBindMacros = {}
 
-local macroBindButtons = {}
 local macroToKey, keyToMacro = {}, {}
-local MacroBinder = CreateFrame("Button", "PhanxMacroBinder", UIParent, "UIPanelButtonTemplate")
+local MacroBinder = Addon:CreateBinderGroup("Macro")
 
-function MacroBinder:BindMacro(macro, key)
-	--print("BindMacro", macro, key)
+function MacroBinder:SetBinding(macro, key)
+	--print(self.name, "SetBinding", macro, key)
 	if not macro or not key then return end
 
 	if macroToKey[macro] then
-		self:UnbindMacro(macro)
+		self:ClearBinding(macro)
 	end
 	if keyToMacro[key] and keyToMacro[key] ~= macro then
-		self:UnbindMacro(keyToMacro[key])
+		self:ClearBinding(keyToMacro[key])
 	end
 	if PhanxBindSpells[key] then
-		PhanxSpellBinder:UnbindSpell(PhanxBindSpells[key])
+		PhanxSpellBinder:ClearBinding(PhanxBindSpells[key])
 	end
 
 	macroToKey[macro], keyToMacro[key] = key, macro
@@ -37,8 +36,8 @@ function MacroBinder:BindMacro(macro, key)
 	return true
 end
 
-function MacroBinder:UnbindMacro(macro)
-	--print("UnbindMacro", macro)
+function MacroBinder:ClearBinding(macro)
+	--print(self.name, "ClearBinding", macro)
 	if not macro then return end
 
 	local key = macroToKey[macro]
@@ -53,159 +52,58 @@ end
 
 ------------------------------------------------------------------------
 
-local function GetButtonMacro(button)
-	local name, icon, body = GetMacroInfo(MacroFrame.macroBase + button:GetID())
+function MacroBinder:GetBindingTarget(binder)
+	--print(self.name, "GetBindingTarget", binder:GetID(), (GetMacroInfo(MacroFrame.macroBase + binder:GetID())))
+	local name, icon, body = GetMacroInfo(MacroFrame.macroBase + binder:GetID())
 	return name
 end
 
 ------------------------------------------------------------------------
 
-local CreateBinder
-do
-	local ignoreKeys = {
-		["LALT"] = true,
-		["LCTRL"] = true,
-		["LSHIFT"] = true,
-		["RALT"] = true,
-		["RCTRL"] = true,
-		["RSHIFT"] = true,
-		["UNKNOWN"] = true,
-	}
-
-	local ignoreKeysNoMod = {
-		["BUTTON1"] = true,
-		["BUTTON2"] = true,
-	}
-
-	local function button_OnKeyDown(self, key)
-		--print(self:GetID(), "OnKeyDown", key)
-		if key == "ESCAPE" then
-			local macro = GetButtonMacro(self:GetParent())
-			if MacroBinder:UnbindMacro(macro) then
-				self.text:SetText("")
-			end
-		elseif not ignoreKeys[key] and (not ignoreKeysNoMod[key] or IsModifierKeyDown()) then
-			if IsShiftKeyDown() then
-				key = "SHIFT-" .. key
-			end
-			if IsControlKeyDown() then
-				key = "CTRL-" .. key
-			end
-			if IsAltKeyDown() then
-				key = "ALT-" .. key
-			end
-			local macro = GetButtonMacro(self:GetParent())
-			if MacroBinder:BindMacro(macro, key) then
-				self.text:SetText(GetKeyText(key) or key)
-			end
+function MacroBinder:Initialize()
+	--print(self.name, "Initialize")
+	local saved = PhanxBindMacros
+	for key, macro in pairs(saved) do
+		if GetMacroIndexByName(macro) > 0 then
+			-- Don't bind macros that don't exist.
+			self:SetBinding(macro, key)
 		end
 	end
+	PhanxBindMacros = keyToMacro
 
-	local buttonToKey = {
-		["LeftButton"] = "BUTTON1",
-		["RightButton"] = "BUTTON2",
-		["MiddleButton"] = "BUTTON3",
-	}
-
-	local function button_OnMouseDown(self, button)
-		--print(self:GetID(), "OnMouseDown", button)
-		button_OnKeyDown(self, buttonToKey[button] or strupper(button))
-	end
-
-	local function button_OnEnter(self)
-		--print(self:GetID(), "OnEnter")
-		for i = 1, #macroBindButtons do
-			local binder = macroBindButtons[i]
-			binder:EnableKeyboard(binder == self)
-		end
-	end
-
-	local function button_OnLeave(self)
-		--print(self:GetID(), "OnLeave")
-		for i = 1, #macroBindButtons do
-			local binder = macroBindButtons[i]
-			binder:EnableKeyboard(false)
-		end
-	end
-
-	local button_backdrop = {
-		bgFile = "Interface\\BUTTONS\\WHITE8X8",
-		tile = true,
-		tileSize = 8,
-	}
-
-	function CreateBinder(parent)
-		local binder = CreateFrame("Button", nil, parent)
-		binder:SetAllPoints(true)
-		binder:Hide()
-
-		binder:SetBackdrop(button_backdrop)
-		binder:SetBackdropColor(0, 0, 0, 0.25)
-
-		binder:EnableMouseWheel(true)
-		binder:RegisterForClicks("AnyUp", "AnyDown")
-
-		binder:SetScript("OnEnter", button_OnEnter)
-		binder:SetScript("OnLeave", button_OnLeave)
-		binder:SetScript("OnHide",  button_OnLeave)
-
-		binder:SetScript("OnKeyDown",   button_OnKeyDown)
-		binder:SetScript("OnMouseDown", button_OnMouseDown)
-
-		local highlight = binder:CreateTexture(nil, "ARTWORK")
-		highlight:SetDrawLayer("HIGHLIGHT")
-		highlight:SetAllPoints(true)
-		highlight:SetTexture([[Interface\Buttons\UI-AutoCastableOverlay]])
-		highlight:SetTexCoord(0.24, 0.75, 0.24, 0.75)
-		binder.highlight = highlight
-
-		local text = binder:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-		text:SetPoint("TOPRIGHT")
-		binder.text = text
-
-		return binder
+	if MacroFrame then
+		self:ADDON_LOADED("ADDON_LOADED", "Blizzard_MacroUI")
+	else
+		self:RegisterEvent("ADDON_LOADED")
 	end
 end
 
-------------------------------------------------------------------------
-
-MacroBinder:RegisterEvent("PLAYER_LOGIN")
-MacroBinder:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_LOGIN" then
-		--print("Initialize")
-		local saved = PhanxBindMacros
-		for key, macro in pairs(saved) do
-			if GetMacroIndexByName(macro) > 0 then
-				-- Don't bind macros that don't exist.
-				self:BindMacro(macro, key)
-			end
-		end
-		PhanxBindMacros = keyToMacro
-	end
-
+function MacroBinder:ADDON_LOADED(event, addon)
 	if not MacroFrame then
-		return self:RegisterEvent("ADDON_LOADED")
+		return
 	end
+	self:UnregisterEvent(event)
+	--print(self.name, "ADDON_LOADED")
 
 	MacroExitButton:SetWidth(70)
 	MacroNewButton:SetWidth(70)
 	MacroNewButton:SetPoint("BOTTOMRIGHT", -72, 4)
 
-	self:SetParent(MacroFrame)
 	self:ClearAllPoints()
+	self:SetParent(MacroFrame)
+	self:SetFrameLevel(MacroFrame:GetFrameLevel() + 1)
 	self:SetPoint("BOTTOMLEFT", 81, 4)
 	self:SetHeight(22)
 	self:SetWidth(118)
 	self:SetText(L["Start Binding"])
 
-	local i = 1
-	while _G["MacroButton"..i] do
-		local binder = CreateBinder(_G["MacroButton"..i])
+	for i = 1, max(MAX_ACCOUNT_MACROS, MAX_CHARACTER_MACROS) do
+		--print(self.name, "CreateBinder", "MacroButton"..i)
+		local binder = self:CreateBinder(_G["MacroButton"..i])
 		binder:SetFrameLevel(30)
 		binder:SetID(i)
 		binder.bindType = "MACRO"
-		macroBindButtons[i] = binder
-		i = i + 1
+		self.buttons[i] = binder
 	end
 
 	hooksecurefunc("MacroFrame_Update", function()
@@ -213,49 +111,23 @@ MacroBinder:SetScript("OnEvent", function(self, event)
 			return
 		end
 		--print("MacroFrame_Update")
-		MacroBinder:UpdateButtons()
+		self:UpdateButtons()
 	end)
 
 	MacroFrame:HookScript("OnHide", function()
-		if MacroBinder.bindingMode then
-			MacroBinder:StopBinding()
-		end
+		self:StopBinding()
 	end)
-
-	self:UnregisterAllEvents()
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:SetScript("OnEvent", function(self)
-		if self.bindingMode then
-			self:StopBinding()
-		end
-	end)
-end)
-
-function MacroBinder:StartBinding()
-	self.bindingMode = true
-	--print("Macro binding mode on.")
-	self:GetHighlightTexture():SetDrawLayer("OVERLAY")
-	self:SetText(L["Stop Binding"])
-	self:UpdateButtons()
-end
-
-function MacroBinder:StopBinding()
-	self.bindingMode = nil
-	--print("Macro binding mode off.")
-	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
-	self:SetText(L["Start Binding"])
-	self:UpdateButtons()
 end
 
 function MacroBinder:UpdateButtons()
-	if not MacroFrame:IsVisible() then
+	if not MacroFrame or not MacroFrame:IsVisible() then
 		return
 	end
-	--print("UpdateButtons")
-	for i = 1, #macroBindButtons do
-		local binder = macroBindButtons[i]
+	--print(self.name, "UpdateButtons")
+	for i = 1, #self.buttons do
+		local binder = self.buttons[i]
 		local button = binder:GetParent()
-		binder.text:SetText(GetKeyText(macroToKey[GetButtonMacro(button)]))
+		binder.text:SetText(GetKeyText(macroToKey[self:GetBindingTarget(button)]))
 		if self.bindingMode and button:IsEnabled() then
 			binder:Show()
 			binder.text:SetParent(binder)
@@ -266,34 +138,26 @@ function MacroBinder:UpdateButtons()
 	end
 end
 
-MacroBinder:SetScript("OnClick", function(self, button)
-	if self.bindingMode then
-		self:StopBinding()
-	else
-		self:StartBinding()
-	end
-end)
-
 hooksecurefunc("DeleteMacro", function(id)
 	-- Loop through the bound macros, find the one that doesn't exist,
 	-- and unbind it.
 	for macro, key in pairs(macroToKey) do
 		if GetMacroIndexByName(macro) == 0 then
-			print("DeleteMacro", macro)
-			self:UnbindMacro(macro)
+			--print(self.name, "DeleteMacro", macro)
+			MacroBinder:ClearBinding(macro)
 			break
 		end
 	end
 end)
 
-hooksecurefunc("EditMacro", function(id, name, icon, body, ...)
+hooksecurefunc("EditMacro", function(id, name, icon, body, isLocal, isCharacter)
 	-- Loop through the bound macros, find the one that doesn't exist,
 	-- unbind it, and rebind that key to the new name.
 	for macro, key in pairs(macroToKey) do
 		if GetMacroIndexByName(macro) == 0 then
-			print("EditMacro", macro, "=>", name)
-			MacroBinder:UnbindMacro(macro)
-			MacroBinder:BindMacro(name, key)
+			--print(self.name, "EditMacro", macro, "=>", name)
+			MacroBinder:ClearBinding(macro)
+			MacroBinder:SetBinding(name, key)
 			break
 		end
 	end

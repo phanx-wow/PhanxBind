@@ -5,28 +5,27 @@
 	See the accompanying README and LICENSE files for more information.
 ----------------------------------------------------------------------]]
 
-local _, ns = ...
-local GetKeyText = ns.GetKeyText
-local L = ns.L
+local _, Addon = ...
+local L = Addon.L
+local GetKeyText = Addon.GetKeyText
 
 PhanxBindSpells = {}
 
-local spellBindButtons, spellBindFlyoutButtons = {}, {}
 local spellToKey, keyToSpell = {}, {}
-local SpellBinder = CreateFrame("Button", "PhanxSpellBinder", SpellBookFrame, "UIPanelButtonTemplate")
+local SpellBinder = Addon:CreateBinderGroup("Spell")
 
-function SpellBinder:BindSpell(id, key)
-	--print("BindSpell", id, key)
+function SpellBinder:SetBinding(id, key)
+	--print(self.name, "SetBinding", id, key)
 	if not id or not key then return end
 
 	if spellToKey[id] then
-		self:UnbindSpell(id)
+		self:ClearBinding(id)
 	end
 	if keyToSpell[key] and keyToSpell[key] ~= id then
-		self:UnbindSpell(keyToSpell[key])
+		self:ClearBinding(keyToSpell[key])
 	end
 	if PhanxBindMacros[key] then
-		PhanxMacroBinder:UnbindMacro(PhanxBindMacros[key])
+		PhanxMacroBinder:ClearBinding(PhanxBindMacros[key])
 	end
 
 	spellToKey[id], keyToSpell[key] = key, id
@@ -38,8 +37,8 @@ function SpellBinder:BindSpell(id, key)
 	return true
 end
 
-function SpellBinder:UnbindSpell(id)
-	--print("UnbindSpell", id)
+function SpellBinder:ClearBinding(id)
+	--print(self.name, "ClearBinding", id)
 	if not id then return end
 
 	local key = spellToKey[id]
@@ -58,11 +57,13 @@ end
 
 local function GetButtonSpell(button)
 	if strmatch(button:GetName(), "^SpellFlyoutButton") then
+		--print("GetButtonSpell", button:GetName(), "flyout", button.spellID, (GetSpellInfo(button.spellID)))
 		return button.spellID
 	end
 	local slot, slotType, slotID = SpellBook_GetSpellBookSlot(button)
 	if slot then
 		local _, id = GetSpellBookItemInfo(slot, SpellBookFrame.bookType)
+		--print("GetButtonSpell", button:GetName(), "book", id, (GetSpellInfo(id)))
 		return id
 	end
 end
@@ -83,132 +84,26 @@ end
 
 ------------------------------------------------------------------------
 
-local CreateBinder
-do
-	local ignoreKeys = {
-		["LALT"] = true,
-		["LCTRL"] = true,
-		["LSHIFT"] = true,
-		["RALT"] = true,
-		["RCTRL"] = true,
-		["RSHIFT"] = true,
-		["UNKNOWN"] = true,
-	}
-
-	local ignoreKeysNoMod = {
-		["BUTTON1"] = true,
-		["BUTTON2"] = true,
-	}
-
-	local function button_OnKeyDown(self, key)
-		--print(self:GetID(), "OnKeyDown", key)
-		if key == "ESCAPE" then
-			local spell = GetButtonSpell(self:GetParent())
-			if SpellBinder:UnbindSpell(spell) then
-				self.text:SetText("")
-			end
-		elseif not ignoreKeys[key] and (not ignoreKeysNoMod[key] or IsModifierKeyDown()) then
-			if IsShiftKeyDown() then
-				key = "SHIFT-" .. key
-			end
-			if IsControlKeyDown() then
-				key = "CTRL-" .. key
-			end
-			if IsAltKeyDown() then
-				key = "ALT-" .. key
-			end
-			local spell = GetButtonSpell(self:GetParent())
-			if SpellBinder:BindSpell(spell, key) then
-				self.text:SetText(GetKeyText(key) or key)
-			end
-		end
+function SpellBinder:OnEnterBinder(binder)
+	if binder.isFlyout then
+		SpellFlyoutButton_SetTooltip(binder:GetParent())
+	else
+		SpellButton_OnEnter(binder:GetParent())
 	end
+end
 
-	local buttonToKey = {
-		["LeftButton"] = "BUTTON1",
-		["RightButton"] = "BUTTON2",
-		["MiddleButton"] = "BUTTON3",
-	}
+function SpellBinder:OnLeaveBinder(binder)
+	GameTooltip:Hide()
+end
 
-	local function button_OnMouseDown(self, button)
-		--print(self:GetID(), "OnMouseDown", button)
-		button_OnKeyDown(self, buttonToKey[button] or strupper(button))
-	end
-
-	local function button_OnEnter(self)
-		--print(self:GetID(), "OnEnter")
-		for i = 1, #spellBindButtons do
-			local binder = spellBindButtons[i]
-			binder:EnableKeyboard(binder == self)
-		end
-		for i = 1, #spellBindFlyoutButtons do
-			local binder = spellBindFlyoutButtons[i]
-			binder:EnableKeyboard(binder == self)
-		end
-		if self.isFlyout then
-			SpellFlyoutButton_SetTooltip(self:GetParent())
-		else
-			SpellButton_OnEnter(self:GetParent())
-		end
-	end
-
-	local function button_OnLeave(self)
-		--print(self:GetID(), "OnLeave")
-		for i = 1, #spellBindButtons do
-			local binder = spellBindButtons[i]
-			binder:EnableKeyboard(false)
-		end
-		for i = 1, #spellBindFlyoutButtons do
-			local binder = spellBindFlyoutButtons[i]
-			binder:EnableKeyboard(false)
-		end
-		GameTooltip:Hide()
-	end
-
-	local button_backdrop = {
-		bgFile = "Interface\\BUTTONS\\WHITE8X8",
-		tile = true,
-		tileSize = 8,
-	}
-
-	function CreateBinder(parent)
-		local binder = CreateFrame("Button", nil, parent)
-		binder:SetAllPoints(true)
-		binder:Hide()
-
-		binder:SetBackdrop(button_backdrop)
-		binder:SetBackdropColor(0, 0, 0, 0.25)
-
-		binder:EnableMouseWheel(true)
-		binder:RegisterForClicks("AnyUp", "AnyDown")
-
-		binder:SetScript("OnEnter", button_OnEnter)
-		binder:SetScript("OnLeave", button_OnLeave)
-		binder:SetScript("OnHide",  button_OnLeave)
-
-		binder:SetScript("OnKeyDown",   button_OnKeyDown)
-		binder:SetScript("OnMouseDown", button_OnMouseDown)
-
-		local highlight = binder:CreateTexture(nil, "ARTWORK")
-		highlight:SetDrawLayer("HIGHLIGHT")
-		highlight:SetAllPoints(true)
-		highlight:SetTexture([[Interface\Buttons\UI-AutoCastableOverlay]])
-		highlight:SetTexCoord(0.24, 0.75, 0.24, 0.75)
-		binder.highlight = highlight
-
-		local text = binder:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
-		text:SetPoint("TOPRIGHT")
-		binder.text = text
-
-		return binder
-	end
+function SpellBinder:GetBindingTarget(binder)
+	return GetButtonSpell(binder:GetParent())
 end
 
 ------------------------------------------------------------------------
 
-SpellBinder:RegisterEvent("PLAYER_LOGIN")
-SpellBinder:SetScript("OnEvent", function(self)
-	--print("Initialize")
+function SpellBinder:Initialize()
+	--print(self.name, "Initialize")
 	for key, spell in pairs(PhanxBindSpells) do
 		if type(spell) == "string" then
 			local link = GetSpellLink(link)
@@ -223,100 +118,62 @@ SpellBinder:SetScript("OnEvent", function(self)
 		end
 	end
 	for key, spell in pairs(PhanxBindSpells) do
-		self:BindSpell(spell, key)
+		self:SetBinding(spell, key)
 	end
 	PhanxBindSpells = keyToSpell
 
 	self:ClearAllPoints()
+	self:SetParent(SpellBookSpellIconsFrame)
+	self:SetFrameLevel(SpellBookSpellIconsFrame:GetFrameLevel() + 1)
 	self:SetPoint("BOTTOMLEFT", 94, 32)
-	self:SetHeight(28)
-	self:SetWidth(200)
+	self:SetSize(200, 28)
 	self:SetText(L["Start Binding"])
 
-	local i = 1
-	while _G["SpellButton"..i] do
-		local binder = CreateBinder(_G["SpellButton"..i])
+	for i = 1, SPELLS_PER_PAGE do
+		local binder = self:CreateBinder(_G["SpellButton"..i])
 		binder:SetFrameLevel(30)
 		binder:SetID(i)
 		binder.bindType = "SPELL"
-		spellBindButtons[i] = binder
-		i = i + 1
+		self.buttons[i] = binder
 	end
-
-	self:UnregisterAllEvents()
-	self:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self:SetScript("OnEvent", function(self)
-		if self.bindingMode then
-			self:StopBinding()
-		end
-	end)
-end)
-
-function SpellBinder:StartBinding()
-	self.bindingMode = true
-	--print("Spellbook binding mode on.")
-	self:GetHighlightTexture():SetDrawLayer("OVERLAY")
-	self:SetText(L["Stop Binding"])
-	self:UpdateButtons()
-end
-
-function SpellBinder:StopBinding()
-	self.bindingMode = nil
-	--print("Spellbook binding mode off.")
-	self:GetHighlightTexture():SetDrawLayer("HIGHLIGHT")
-	self:SetText(L["Start Binding"])
-	self:UpdateButtons()
 end
 
 function SpellBinder:UpdateButtons()
-	if not SpellBookFrame:IsShown() then
-		for i = 1, #spellBindFlyoutButtons do
-			local binder = spellBindFlyoutButtons[i]
-			binder:Hide()
-			binder.text:SetParent(binder)
-		end
-		return
-	end
-	--print("UpdateButtons")
-	for i = 1, #spellBindButtons do
-		local binder = spellBindButtons[i]
-		local button = binder:GetParent()
-		binder.text:SetText(GetKeyText(spellToKey[GetButtonSpell(button)]))
-		if self.bindingMode and not IsButtonPassive(button) and not IsButtonFlyout(button) then
-			binder:Show()
-			binder.text:SetParent(binder)
-		else
-			binder:Hide()
-			binder.text:SetParent(button)
+	--print(self.name, "UpdateButtons")
+	if SpellBookFrame:IsShown() then
+		for i = 1, SPELLS_PER_PAGE do
+			local binder = self.buttons[i]
+			local button = binder:GetParent()
+			binder.text:SetText(GetKeyText(spellToKey[GetButtonSpell(button)]))
+			if self.bindingMode and not IsButtonPassive(button) and not IsButtonFlyout(button) then
+				binder:Show()
+				binder.text:SetParent(binder)
+			else
+				binder:Hide()
+				binder.text:SetParent(button)
+			end
 		end
 	end
-	if not SpellFlyout:IsShown() or SpellFlyout:GetParent():GetParent() ~= SpellBookSpellIconsFrame then
-		return
-	end
-	for i = 1, #spellBindFlyoutButtons do
-		local binder = spellBindFlyoutButtons[i]
-		local button = binder:GetParent()
-		if not button:IsShown() then
-			break
-		end
-		binder:SetFrameLevel(button:GetFrameLevel() + 1)
-		binder.text:SetText(GetKeyText(spellToKey[GetButtonSpell(button)]))
-		if SpellBinder.bindingMode then
-			binder:Show()
-			binder.text:SetParent(binder)
-		else
-			binder:Hide()
-			binder.text:SetParent(button)
+	if SpellFlyout:IsShown() then
+		local flyoutInBook = SpellFlyout:GetParent():GetParent() == SpellBookSpellIconsFrame
+		for i = SPELLS_PER_PAGE + 1, #self.buttons do
+			local binder = self.buttons[i]
+			local button = binder:GetParent()
+			binder:SetFrameLevel(button:GetFrameLevel() + 1)
+			binder.text:SetText(GetKeyText(spellToKey[GetButtonSpell(button)]))
+			if self.bindingMode and flyoutInBook then
+				binder:Show()
+				binder.text:SetParent(binder)
+			else
+				binder:Hide()
+				binder.text:SetParent(button)
+			end
 		end
 	end
 end
 
-SpellBinder:SetScript("OnClick", function(self, button)
-	if self.bindingMode then
-		self:StopBinding()
-	else
-		self:StartBinding()
-	end
+SpellBookFrame:HookScript("OnHide", function()
+	SpellBinder:StopBinding()
 end)
 
 hooksecurefunc("SpellBookFrame_UpdateSpells", function()
@@ -335,22 +192,16 @@ hooksecurefunc(SpellFlyout, "Toggle", function()
 	local i = 1
 	while _G["SpellFlyoutButton"..i] do
 		local button = _G["SpellFlyoutButton"..i]
-		local binder = spellBindFlyoutButtons[i]
+		local binder = SpellBinder.buttons[SPELLS_PER_PAGE + i]
 		if not binder then
-			binder = CreateBinder(button)
+			binder = SpellBinder:CreateBinder(button)
 			binder:SetFrameLevel(button:GetFrameLevel() + 1)
 			binder:SetID(i)
 			binder.bindType = "SPELL"
 			binder.isFlyout = true
-			spellBindFlyoutButtons[i] = binder
+			SpellBinder.buttons[SPELLS_PER_PAGE + i] = binder
 		end
 		i = i + 1
 	end
 	SpellBinder:UpdateButtons()
-end)
-
-SpellBookFrame:HookScript("OnHide", function()
-	if SpellBinder.bindingMode then
-		SpellBinder:StopBinding()
-	end
 end)

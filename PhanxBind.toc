@@ -2,14 +2,14 @@
 ## Version: 5.4.2.wowi:revision
 
 ## Title: PhanxBind
-## Notes: Direct key bindings for spells and macros.
-## Notes-deDE: Direkttastenbelegungen für Zauber und Makros.
-## Notes-esES: Asignaciones de teclas directas para hechizos y macros.
-## Notes-esMX: Asignaciones de teclas directas para hechizos y macros.
-## Notes-frFR: Raccourcis directs pour les sorts et macros.
-## Notes-itIT: Assegnazioni di tasti diretti per incantesimi e macro.
-## Notes-ptBR: Teclas de atalho diretas para feitiços e macros.
-## Notes-ruRU: Прямые назначения клавиш для заклинаний и макросов.
+## Notes: Direct key bindings for your spells and macros.
+## Notes-deDE: Direkttastenbelegungen für Eure Zauber und Makros.
+## Notes-esES: Asignaciones de teclas directas para tus hechizos y macros.
+## Notes-esMX: Asignaciones de teclas directas para tus hechizos y macros.
+## Notes-frFR: Raccourcis directs pour vos sorts et macros.
+## Notes-itIT: Assegnazioni di tasti diretti per i vostri incantesimi e macro.
+## Notes-ptBR: Teclas de atalho diretas para seus feitiços e macros.
+## Notes-ruRU: Прямые назначения клавиш для ваших заклинаний и макросов.
 
 ## Author: Phanx
 ## X-Email: addons@phanx.net
