@@ -1,7 +1,7 @@
 --[[--------------------------------------------------------------------
 	PhanxBind
 	Direct key bindings for spells and macros.
-	Copyright (c) 2011-2013 Phanx <addons@phanx.net>. All rights reserved.
+	Copyright (c) 2011-2014 Phanx <addons@phanx.net>. All rights reserved.
 	See the accompanying README and LICENSE files for more information.
 ----------------------------------------------------------------------]]
 
@@ -114,7 +114,7 @@ do
 
 	local function OnMouseDown(self, button)
 		--print(self.owner.name, self:GetParent():GetName(), "OnMouseDown", button)
-		button_OnKeyDown(self, buttonToKey[button] or strupper(button))
+		OnKeyDown(self, buttonToKey[button] or strupper(button))
 	end
 
 	local function OnEnter(self)

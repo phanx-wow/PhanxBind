@@ -1,5 +1,5 @@
 ## Interface: 50400
-## Version: 5.4.2.wowi:revision
+## Version: 5.4.7.wowi:revision
 
 ## Title: PhanxBind
 ## Notes: Direct key bindings for your spells and macros.
@@ -13,7 +13,7 @@
 
 ## Author: Phanx
 ## X-Email: addons@phanx.net
-## X-Copyright: Copyright (c) 2011-2013 Phanx. All rights reserved.
+## X-Copyright: Copyright (c) 2011-2014 Phanx. All rights reserved.
 ## X-License: See the accompanying LICENSE file for details.
 ## X-CompatibleLocales: deDE, enUS, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 ## X-Localizations: deDE, enUS, esES, esMX, frFR, itIT, ptBR, ruRU
