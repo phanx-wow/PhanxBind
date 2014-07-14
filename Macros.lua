@@ -67,6 +67,8 @@ function MacroBinder:Initialize()
 		if GetMacroIndexByName(macro) > 0 then
 			-- Don't bind macros that don't exist.
 			self:SetBinding(macro, key)
+		else
+			print("Macro not found:", macro)
 		end
 	end
 	PhanxBindMacros = keyToMacro
