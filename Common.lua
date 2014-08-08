@@ -1,8 +1,10 @@
 --[[--------------------------------------------------------------------
 	PhanxBind
 	Direct key bindings for spells and macros.
-	Copyright (c) 2011-2014 Phanx <addons@phanx.net>. All rights reserved.
+	Copyright (c) 2011-2014 Phanx. All rights reserved.
 	See the accompanying README and LICENSE files for more information.
+	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
+	http://www.curse.com/addons/wow/phanxbind
 ----------------------------------------------------------------------]]
 
 local ADDON, Addon = ...
@@ -15,22 +17,22 @@ local L = {
 }
 if GetLocale() == "deDE" then
 	L["Start Binding"] = "Zuweisen"
-	L["Stop Binding"]  = "Zuweisen halten"
+	L["Stop Binding"]  = "Halten"
 elseif strsub(GetLocale(), 1, 2) == "es" then
 	L["Start Binding"] = "Asignar"
-	L["Stop Binding"]  = "Dejar asignar"
+	L["Stop Binding"]  = "Dejar"
 elseif GetLocale() == "frFR" then
 	L["Start Binding"] = "Associer"
-	L["Stop Binding"]  = "Arrêter associer"
+	L["Stop Binding"]  = "Arrêter"
 elseif GetLocale() == "itIT" then
 	L["Start Binding"] = "Assegnare"
-	L["Stop Binding"]  = "Smettere assegnare"
+	L["Stop Binding"]  = "Smettere"
 elseif GetLocale() == "ptBR" then
 	L["Start Binding"] = "Vincular"
-	L["Stop Binding"]  = "Parar de vincular"
+	L["Stop Binding"]  = "Parar"
 elseif GetLocale() == "ruRU" then
 	L["Start Binding"] = "назначения"
-	L["Stop Binding"]  = "Прекратить назначения"
+	L["Stop Binding"]  = "Прекратить"
 end
 Addon.L = L
 
