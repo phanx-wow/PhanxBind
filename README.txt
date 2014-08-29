@@ -1,12 +1,12 @@
 PhanxBind
 ============
 
-Direct key bindings for your spells and macros.  
-[de] Direkttastenbelegungen für Eure Zauber und Makros.  
-[es] Asignaciones de teclas directas para tus hechizos y macros.  
-[fr] Raccourcis directs pour vos sorts et macros.  
-[it] Assegnazioni di tasti diretti per i vostri incantesimi e macro.  
-[pt] Teclas de atalho diretas para seus feitiços e macros.  
+Direct key bindings for your spells and macros.
+[de] Direkttastenbelegungen für Eure Zauber und Makros.
+[es] Asignaciones de teclas directas para tus hechizos y macros.
+[fr] Raccourcis directs pour vos sorts et macros.
+[it] Assegnazioni di tasti diretti per i vostri incantesimi e macro.
+[pt] Teclas de atalho diretas para seus feitiços e macros.
 [ru] Прямые назначения клавиш для ваших заклинаний и макросов.
 
 
@@ -59,12 +59,11 @@ disabled, and the exact text of the related error message (if any) from
 [BugSack](http://www.wowinterface.com/downloads/info5995-BugSack.html).
 
 If you need to contact me privately, you can send me a private message
-on either download site, or email me at <addons@phanx.net>.
+on either download site, or send me an email at <addons@phanx.net>.
 
 
 License
 ----------
 
-Copyright (c) 2011-2014 Phanx. All rights reserved.  
-See the accompanying LICENSE file for information about the conditions
-under which redistribution and modification may be allowed.
+Copyright (c) 2011-2014 Phanx. All rights reserved.
+See the accompanying LICENSE file for permissions and restrictions.

@@ -45,7 +45,10 @@ do
 		["CTRL%-"]     = "c",
 		["SHIFT%-"]    = "s",
 		["BUTTON"]     = "m",
-		["MOUSEWHEEL"] = "w",
+		["MOUSEWHEELUP"]   = "wU",
+		["MOUSEWHEELDOWN"] = "wD",
+		["INSERT"]     = "Ins",
+		["DELETE"]     = "Del",
 		["NUMPAD"]     = "n",
 		["PLUS"]       = "+",
 		["MINUS"]      = "-",
@@ -119,6 +122,11 @@ do
 		OnKeyDown(self, buttonToKey[button] or strupper(button))
 	end
 
+	local function OnMouseWheel(self, delta)
+		--print(self.owner.name, self:GetParent():GetName(), "OnMouseWheel", delta)
+		OnKeyDown(self, delta > 0 and "MOUSEWHEELUP" or "MOUSEWHEELDOWN")
+	end
+
 	local function OnEnter(self)
 		--print(self.owner.name, self:GetParent():GetName(), "OnEnter")
 		for i = 1, #self.owner.buttons do
@@ -166,6 +174,7 @@ do
 
 		binder:SetScript("OnKeyDown",   OnKeyDown)
 		binder:SetScript("OnMouseDown", OnMouseDown)
+		binder:SetScript("OnMouseWheel", OnMouseWheel)
 
 		local highlight = binder:CreateTexture(nil, "ARTWORK")
 		highlight:SetDrawLayer("HIGHLIGHT")
