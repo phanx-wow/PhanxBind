@@ -117,6 +117,9 @@ function SpellBinder:Initialize()
 				PhanxBindSpells[key] = nil
 				print("Removed old binding:", key, "->", spell)
 			end
+		elseif not GetSpellInfo(spell) then
+			PhanxBindSpells[key] = nil
+			print("Removed binding for nonexistent spell:", key, "->", spell)
 		end
 	end
 	for key, spell in pairs(PhanxBindSpells) do
