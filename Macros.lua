@@ -70,16 +70,75 @@ function MacroBinder:Initialize()
 			-- Don't bind macros that don't exist.
 			self:SetBinding(macro, key)
 		else
-			print("Macro not found:", macro)
+			--print("Macro not found:", macro)
+			self.missing = self.missing or {}
+			self.missing[key] = macro
 		end
 	end
 	PhanxBindMacros = keyToMacro
+
+	if self.missing then
+		self:StartQueue("Initialize")
+	end
 
 	if MacroFrame then
 		self:ADDON_LOADED("ADDON_LOADED", "Blizzard_MacroUI")
 	else
 		self:RegisterEvent("ADDON_LOADED")
 	end
+end
+
+function MacroBinder:StartQueue(event)
+	--print(self.name, "StartQueue", event)
+	if not self.queue then
+		function self.queue()
+			if not self.missing then return end
+			for key, macro in pairs(self.missing) do
+				--print("Looking for missing macro:", macro)
+				if GetMacroIndexByName(macro) > 0 and not keyToMacro[key] and not macroToKey[macro] then
+					--print("Found it!")
+					self:SetBinding(macro, key)
+					self.missing[key] = nil
+				else
+					--print("Still missing!")
+				end
+			end
+			if next(self.missing) and self.failures <= 5 then
+				--print("Failures:", self.failures, "/", 5)
+				self.failures = self.failures + 1
+				C_Timer.After(1, self.queue)
+			else
+				if self.failures > 5 then
+					--print("Too many failures, giving up.")
+					for key, macro in pairs(self.missing) do
+						print("Removed binding \"" .. key .. "\" for missing macro \"" .. macro .."\"")
+					end
+				else
+					--print("No more missing macros!")
+				end
+				self.queue = nil
+				self.failures = nil
+				self.missing = nil
+				self:UnregisterEvent("PLAYER_ALIVE")
+				self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+				self:UnregisterEvent("VARIABLES_LOADED")
+				self.PLAYER_ALIVE = nil
+				self.PLAYER_ENTERING_WORLD = nil
+				self.VARIABLES_LOADED = nil
+			end
+		end
+	end
+
+	self.PLAYER_ALIVE = self.StartQueue
+	self.PLAYER_ENTERING_WORLD = self.StartQueue
+	self.VARIABLES_LOADED = self.StartQueue
+
+	self:RegisterEvent("PLAYER_ALIVE")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("VARIABLES_LOADED")
+
+	self.failures = 0
+	C_Timer.After(1, self.queue)
 end
 
 function MacroBinder:ADDON_LOADED(event, addon)
