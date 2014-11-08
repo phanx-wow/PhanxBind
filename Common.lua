@@ -1,10 +1,10 @@
 --[[--------------------------------------------------------------------
 	PhanxBind
 	Direct key bindings for spells and macros.
-	Copyright (c) 2011-2014 Phanx. All rights reserved.
-	See the accompanying README and LICENSE files for more information.
+	Copyright (c) 2011-2014 Phanx <addons@phanx.net>. All rights reserved.
 	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
 	http://www.curse.com/addons/wow/phanxbind
+	https://github.com/Phanx/PhanxBind
 ----------------------------------------------------------------------]]
 
 local ADDON, Addon = ...
