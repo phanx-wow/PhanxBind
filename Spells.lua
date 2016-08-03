@@ -3,7 +3,7 @@
 	Direct key bindings for spells and macros.
 	Copyright (c) 2011-2016 Phanx <addons@phanx.net>. All rights reserved.
 	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
-	http://www.curse.com/addons/wow/phanxbind
+	https://mods.curse.com/addons/wow/phanxbind
 	https://github.com/Phanx/PhanxBind
 ----------------------------------------------------------------------]]
 
@@ -11,10 +11,8 @@ local _, Addon = ...
 local L = Addon.L
 local GetKeyText = Addon.GetKeyText
 
-PhanxBindSpells = {}
-
 local spellToKey, keyToSpell = {}, {}
-local SpellBinder = Addon:CreateBinderGroup("Spell")
+local SpellBinder = Addon:CreateBinderGroup("Spell", "PhanxBindSpells")
 
 function SpellBinder:SetBinding(id, key)
 	--print(self.name, "SetBinding", id, key)
@@ -106,26 +104,26 @@ end
 
 function SpellBinder:Initialize()
 	--print(self.name, "Initialize")
-	for key, spell in pairs(PhanxBindSpells) do
+	for key, spell in pairs(self.db) do
 		if type(spell) == "string" then
 			local link = GetSpellLink(link)
 			local id = link and strmatch(link, "spell:(%d+)")
 			if id then
-				PhanxBindSpells[key] = id
+				self.db[key] = id
 				print("Updated old binding:", key, "->", spell, id)
 			else
-				PhanxBindSpells[key] = nil
+				self.db[key] = nil
 				print("Removed old binding:", key, "->", spell)
 			end
 		elseif not GetSpellInfo(spell) then
-			PhanxBindSpells[key] = nil
+			self.db[key] = nil
 			print("Removed binding for nonexistent spell:", key, "->", spell)
 		end
 	end
-	for key, spell in pairs(PhanxBindSpells) do
+	for key, spell in pairs(self.db) do
 		self:SetBinding(spell, key)
 	end
-	PhanxBindSpells = keyToSpell
+	self:SetDB(keyToSpell)
 
 	self:ClearAllPoints()
 	self:SetParent(SpellBookSpellIconsFrame)

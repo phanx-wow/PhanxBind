@@ -3,7 +3,7 @@
 	Direct key bindings for spells and macros.
 	Copyright (c) 2011-2016 Phanx <addons@phanx.net>. All rights reserved.
 	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
-	http://www.curse.com/addons/wow/phanxbind
+	https://mods.curse.com/addons/wow/phanxbind
 	https://github.com/Phanx/PhanxBind
 ----------------------------------------------------------------------]]
 -- TODO: Save bindings for global macros on a global basis.
@@ -12,10 +12,8 @@ local ADDON, Addon = ...
 local L = Addon.L
 local GetKeyText = Addon.GetKeyText
 
-PhanxBindMacros = {}
-
 local macroToKey, keyToMacro = {}, {}
-local MacroBinder = Addon:CreateBinderGroup("Macro")
+local MacroBinder = Addon:CreateBinderGroup("Macro", "PhanxBindMacros")
 
 function MacroBinder:SetBinding(macro, key)
 	--print(self.name, "SetBinding", macro, key)
@@ -64,8 +62,7 @@ end
 
 function MacroBinder:Initialize()
 	--print(self.name, "Initialize")
-	local saved = PhanxBindMacros
-	for key, macro in pairs(saved) do
+	for key, macro in pairs(self.db) do
 		if GetMacroIndexByName(macro) > 0 then
 			-- Don't bind macros that don't exist.
 			self:SetBinding(macro, key)
@@ -75,7 +72,7 @@ function MacroBinder:Initialize()
 			self.missing[key] = macro
 		end
 	end
-	PhanxBindMacros = keyToMacro
+	self:SetDB(keyToMacro)
 
 	if self.missing then
 		self:StartQueue("Initialize")

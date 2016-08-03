@@ -3,7 +3,7 @@
 	Direct key bindings for spells and macros.
 	Copyright (c) 2011-2016 Phanx <addons@phanx.net>. All rights reserved.
 	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
-	http://www.curse.com/addons/wow/phanxbind
+	https://mods.curse.com/addons/wow/phanxbind
 	https://github.com/Phanx/PhanxBind
 ----------------------------------------------------------------------]]
 
@@ -196,6 +196,20 @@ end
 
 ------------------------------------------------------------------------
 
+local function noop() end
+
+local function EnsureUniqueBinding(self, key)
+	for _, binderGroup in pairs(Addon.BinderGroups) do
+		if binderGroup.db[key] then
+			binderGroup:ClearBinding(binderGroup.db[key])
+		end
+	end
+end
+
+local function IsBinding(self)
+	return self.bindingMode
+end
+
 local function StartBinding(self)
 	if self.bindingMode or InCombatLockdown() then return end
 	self.bindingMode = true
@@ -214,11 +228,7 @@ local function StopBinding(self)
 	self:UpdateButtons()
 end
 
-local function IsBinding(self)
-	return self.bindingMode
-end
-
-local function OnClick(self, button)
+local function ToggleBinding(self)
 	if self.bindingMode then
 		self:StopBinding()
 	else
@@ -226,14 +236,44 @@ local function OnClick(self, button)
 	end
 end
 
-local function noop() end
+local function SetDB(self, db)
+	_G[self.dbname] = db
+	self.db = db
+end
 
-function Addon:CreateBinderGroup(name)
+Addon.BinderGroups = {}
+
+function Addon:CreateBinderGroup(name, dbname)
 	local f = CreateFrame("Button", "Phanx"..name.."Binder", UIParent, "UIPanelButtonTemplate")
+	tinsert(self.BinderGroups, f)
+
+	f.buttons = {}
+	f.name = name
+
+	f.CreateBinder = CreateBinder
+	f.EnsureUniqueBinding = EnsureUniqueBinding
+	f.IsBinding = IsBinding
+	f.StartBinding = StartBinding
+	f.StopBinding = StopBinding
+
+	-- These should be overwritten by the module.
+	f.Initialize = noop
+	f.SetBinding = noop
+	f.ClearBinding = noop
+	f.GetBindingTarget = noop
+	f.UpdateButtons = noop
+
+	f:SetText(L["Start Binding"])
+	f:SetScript("OnClick", ToggleBinding)
+
 	f:RegisterEvent("PLAYER_LOGIN")
 	f:RegisterEvent("PLAYER_REGEN_DISABLED")
 	f:SetScript("OnEvent", function(self, event, ...)
 		if event == "PLAYER_LOGIN" then
+			_G[dbname] = _G[dbname] or {}
+			f.db = _G[dbname]
+			f.dbname = dbname
+			f.SetDB = SetDB
 			self:UnregisterEvent(event)
 			return self:Initialize()
 		elseif event == "PLAYER_REGEN_DISABLED" then
@@ -242,24 +282,6 @@ function Addon:CreateBinderGroup(name)
 			return self[event](self, event, ...)
 		end
 	end)
-
-	f:SetText(L["Start Binding"])
-	f:SetScript("OnClick", OnClick)
-
-	f.buttons = {}
-	f.name = name
-
-	f.CreateBinder = CreateBinder
-	f.IsBinding = IsBinding
-	f.StartBinding = StartBinding
-	f.StopBinding = StopBinding
-
-	-- These should be overwritten.
-	f.Initialize = noop
-	f.SetBinding = noop
-	f.ClearBinding = noop
-	f.GetBindingTarget = noop
-	f.UpdateButtons = noop
 
 	return f
 end
