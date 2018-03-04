@@ -1,9 +1,7 @@
 --[[--------------------------------------------------------------------
 	PhanxBind
 	Direct key bindings for spells and macros.
-	Copyright (c) 2011-2016 Phanx <addons@phanx.net>. All rights reserved.
-	http://www.wowinterface.com/downloads/info22653-PhanxBind.html
-	https://mods.curse.com/addons/wow/phanxbind
+	Copyright 2011-2018 Phanx <addons@phanx.net>. All rights reserved.
 	https://github.com/Phanx/PhanxBind
 ----------------------------------------------------------------------]]
 

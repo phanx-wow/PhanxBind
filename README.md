@@ -9,5 +9,5 @@ PhanxBind
 **PT** — Teclas de atalho diretas para seus feitiços e macros.  
 **RU** — Прямые назначения клавиш для ваших заклинаний и макросов.
 
-* [Download on Curse](http://mods.curse.com/addons/wow/phanxbind/)
-* [Download on WoWInterface](http://www.wowinterface.com/downloads/info22653-PhanxBind.html)
+* [Download on Curse](https://www.curseforge.com/wow/addons/phanxbind/)
+* [Download on WoWInterface](https://www.wowinterface.com/downloads/info22653-PhanxBind.html)

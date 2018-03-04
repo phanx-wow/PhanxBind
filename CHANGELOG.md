@@ -1,3 +1,8 @@
+### Version 7.3.5.0
+
+* Updated for WoW 7.3
+* Fixed an occasional error about invalid spell slots
+
 ### Version 7.1.0.0
 
 * Updated for WoW 7.1
