@@ -133,7 +133,7 @@ do
 		end
 		local parent = self:GetParent()
 		local script = parent:GetScript("OnEnter")
-		if script then
+		if script and SpellBook_GetSpellBookSlot(parent) then -- avoid invalid spell slot error in Blizz code
 			script(parent)
 		end
 	end
