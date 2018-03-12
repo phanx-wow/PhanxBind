@@ -1,10 +1,11 @@
 ### Version 7.3.5.1
 
-* Bindings are now saved separately for each spec
-* When you switch to a spec that does not yet have a profile, a new profile will
-  be created by copying the previous spec's profile; any changes you make will
-  apply *only* to the current spec. If you want to rebind a shared spell, you
-  will have to do so separately for each spec.
+* **Bindings are now saved separately for each spec.** When you switch to a spec
+  that does not yet have a profile, a new profile will be created by copying the
+  previous spec's profile; any changes you make will apply *only* to the current
+  spec. If you want to rebind a shared spell, you will have to do so separately
+  for each spec.
+* Fixed a potential "action blocked" issue caused by tainting the spellbook
 
 ### Version 7.3.5.0
 

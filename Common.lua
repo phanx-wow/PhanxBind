@@ -148,11 +148,15 @@ do
 			local binder = self.owner.buttons[i]
 			binder:EnableKeyboard(binder == self)
 		end
-		local parent = self:GetParent()
-		local script = parent:GetScript("OnEnter")
-		if script and SpellBook_GetSpellBookSlot(parent) then -- avoid invalid spell slot error in Blizz code
-			script(parent)
-		end
+
+		-- Can't call SpellButton_OnEnter because it does other stuff
+		-- and spreads taint. Just recreate the important parts here.
+		local spellButton = self:GetParent()
+		local slot = SpellBook_GetSpellBookSlot(spellButton)
+		if not slot then return end
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetSpellBookItem(slot, SpellBookFrame.bookType)
+		GameTooltip:Show()
 	end
 
 	local function OnLeave(self)
@@ -161,11 +165,9 @@ do
 			local binder = self.owner.buttons[i]
 			binder:EnableKeyboard(false)
 		end
-		local parent = self:GetParent()
-		local script = parent:GetScript("OnLeave")
-		if script then
-			script(parent)
-		end
+		-- Can't call SpellButton_OnLeave because it does other stuff
+		-- and spreads taint. Just recreate the important parts here.
+		GameTooltip:Hide()
 	end
 
 	local BACKDROP = { bgFile = "Interface\\BUTTONS\\WHITE8X8", tile = true, tileSize = 8 }
