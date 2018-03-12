@@ -6,6 +6,7 @@
 ----------------------------------------------------------------------]]
 
 local ADDON, Addon = ...
+local prototype = {}
 
 ------------------------------------------------------------------------
 
@@ -33,6 +34,22 @@ elseif GetLocale() == "ruRU" then
 	L["Stop Binding"]  = "Прекратить"
 end
 Addon.L = L
+
+------------------------------------------------------------------------
+
+local dbMigrations = {
+	{
+		date = 180311,
+		func = function (db)
+			-- class to class/spec
+			local spec = GetSpecialization()
+			return spec and {
+				[spec] = db,
+				PROFILE = spec,
+			}
+		end
+	}
+}
 
 ------------------------------------------------------------------------
 
@@ -153,8 +170,8 @@ do
 
 	local BACKDROP = { bgFile = "Interface\\BUTTONS\\WHITE8X8", tile = true, tileSize = 8 }
 
-	function CreateBinder(owner, parent)
-		--print(owner.name, "CreateBinder", parent:GetName())
+	function prototype:CreateBinder( parent)
+		--print(self.name, "CreateBinder", parent:GetName())
 
 		local binder = CreateFrame("Button", nil, parent)
 		binder:SetAllPoints(true)
@@ -185,7 +202,7 @@ do
 		text:SetPoint("TOPRIGHT")
 		binder.text = text
 
-		binder.owner = owner
+		binder.owner = self
 		binder.parent = parent
 
 		return binder
@@ -196,7 +213,11 @@ end
 
 local function noop() end
 
-local function EnsureUniqueBinding(self, key)
+function prototype:ClearAllBindings()
+	ClearOverrideBindings(self)
+end
+
+function prototype:EnsureUniqueBinding(key)
 	for _, binderGroup in pairs(Addon.BinderGroups) do
 		if binderGroup.db[key] then
 			binderGroup:ClearBinding(binderGroup.db[key])
@@ -204,11 +225,11 @@ local function EnsureUniqueBinding(self, key)
 	end
 end
 
-local function IsBinding(self)
+function prototype:IsBinding()
 	return self.bindingMode
 end
 
-local function StartBinding(self)
+function prototype:StartBinding()
 	if self.bindingMode or InCombatLockdown() then return end
 	self.bindingMode = true
 	--print(self.name, "binding mode on.")
@@ -217,7 +238,7 @@ local function StartBinding(self)
 	self:UpdateButtons()
 end
 
-local function StopBinding(self)
+function prototype:StopBinding()
 	if not self.bindingMode then return end
 	self.bindingMode = nil
 	--print(self.name, "binding mode off.")
@@ -226,7 +247,7 @@ local function StopBinding(self)
 	self:UpdateButtons()
 end
 
-local function ToggleBinding(self)
+function prototype:ToggleBinding()
 	if self.bindingMode then
 		self:StopBinding()
 	else
@@ -234,9 +255,28 @@ local function ToggleBinding(self)
 	end
 end
 
-local function SetDB(self, db)
-	_G[self.dbname] = db
-	self.db = db
+function prototype:SetDB(specBindings)
+	self.db[self.db.PROFILE] = specBindings
+end
+
+function prototype:SetProfile(spec)
+	if spec == self.db.PROFILE then return end
+	print("switched from spec", self.db.PROFILE, "to spec", spec)
+	self:ClearAllBindings()
+
+	if not self.db[spec] then
+		local new = {}
+		for k, v in pairs(self.db[self.db.PROFILE]) do
+			new[k] = v
+		end
+		self.db[spec] = new
+		print("new profile")
+	end
+
+	self.db.PROFILE = spec
+	self.profile = self.db[spec]
+	print("set profile")
+	self:SetAllBindings()
 end
 
 Addon.BinderGroups = {}
@@ -248,32 +288,48 @@ function Addon:CreateBinderGroup(name, dbname)
 	f.buttons = {}
 	f.name = name
 
-	f.CreateBinder = CreateBinder
-	f.EnsureUniqueBinding = EnsureUniqueBinding
-	f.IsBinding = IsBinding
-	f.StartBinding = StartBinding
-	f.StopBinding = StopBinding
-
 	-- These should be overwritten by the module.
 	f.Initialize = noop
+	f.SetAllBindings = noop
 	f.SetBinding = noop
 	f.ClearBinding = noop
 	f.GetBindingTarget = noop
 	f.UpdateButtons = noop
 
+	for k, v in pairs(prototype) do
+		f[k] = v
+	end
+
 	f:SetText(L["Start Binding"])
-	f:SetScript("OnClick", ToggleBinding)
+	f:SetScript("OnClick", f.ToggleBinding)
 
 	f:RegisterEvent("PLAYER_LOGIN")
-	f:RegisterEvent("PLAYER_REGEN_DISABLED")
 	f:SetScript("OnEvent", function(self, event, ...)
 		if event == "PLAYER_LOGIN" then
-			_G[dbname] = _G[dbname] or {}
-			f.db = _G[dbname]
-			f.dbname = dbname
-			f.SetDB = SetDB
+			local db = _G[dbname] or {}
+			for i = 1, #dbMigrations do
+				local mig = dbMigrations[i]
+				if (not db.VERSION or db.VERSION < mig.date) then
+					print("applying migration", mig.date)
+					local newdb = mig.func(db)
+					if not newdb then break end
+					db = newdb
+					db.VERSION = mig.date
+					print("success")
+				end
+			end
+			_G[dbname] = db
+
+			self.db = _G[dbname]
+			self.dbname = dbname
+
 			self:UnregisterEvent(event)
+			self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+			self:RegisterEvent("PLAYER_REGEN_DISABLED")
+
 			return self:Initialize()
+		elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+			self:SetProfile(GetSpecialization())
 		elseif event == "PLAYER_REGEN_DISABLED" then
 			return self:StopBinding()
 		else

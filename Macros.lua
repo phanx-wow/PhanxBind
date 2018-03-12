@@ -16,6 +16,7 @@ local MacroBinder = Addon:CreateBinderGroup("Macro", "PhanxBindMacros")
 function MacroBinder:SetBinding(macro, key)
 	--print(self.name, "SetBinding", macro, key)
 	if not macro or not key then return end
+	local spellProfile = PhanxSpellBinder.db and PhanxSpellBinder.db[PhanxSpellBinder.db.PROFILE]
 
 	if macroToKey[macro] then
 		self:ClearBinding(macro)
@@ -23,8 +24,8 @@ function MacroBinder:SetBinding(macro, key)
 	if keyToMacro[key] and keyToMacro[key] ~= macro then
 		self:ClearBinding(keyToMacro[key])
 	end
-	if PhanxBindSpells[key] then
-		PhanxSpellBinder:ClearBinding(PhanxBindSpells[key])
+	if spellProfile and spellProfile[key] then
+		PhanxSpellBinder:ClearBinding(spellProfile[key])
 	end
 
 	macroToKey[macro], keyToMacro[key] = key, macro
@@ -58,9 +59,9 @@ end
 
 ------------------------------------------------------------------------
 
-function MacroBinder:Initialize()
-	--print(self.name, "Initialize")
-	for key, macro in pairs(self.db) do
+function MacroBinder:SetAllBindings()
+	local profile = self.db[self.db.PROFILE]
+	for key, macro in pairs(profile) do
 		if GetMacroIndexByName(macro) > 0 then
 			-- Don't bind macros that don't exist.
 			self:SetBinding(macro, key)
@@ -75,6 +76,11 @@ function MacroBinder:Initialize()
 	if self.missing then
 		self:StartQueue("Initialize")
 	end
+end
+
+function MacroBinder:Initialize()
+	--print(self.name, "Initialize")
+	self:SetAllBindings()
 
 	if MacroFrame then
 		self:ADDON_LOADED("ADDON_LOADED", "Blizzard_MacroUI")

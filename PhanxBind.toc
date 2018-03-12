@@ -18,6 +18,7 @@
 ## X-Curse-Project-ID: 70476
 ## X-WoWI-ID: 22653
 
+## SavedVariables: PhanxBindMacrosGlobal, PhanxBindSpellsGlobal
 ## SavedVariablesPerCharacter: PhanxBindMacros, PhanxBindSpells
 
 Common.lua

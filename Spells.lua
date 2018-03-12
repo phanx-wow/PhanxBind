@@ -15,6 +15,8 @@ local SpellBinder = Addon:CreateBinderGroup("Spell", "PhanxBindSpells")
 function SpellBinder:SetBinding(id, key)
 	--print(self.name, "SetBinding", id, key)
 	if not id or not key then return end
+	local profile = self.db[self.db.PROFILE]
+	local macroProfile = PhanxMacroBinder.db[PhanxMacroBinder.db.PROFILE]
 
 	if spellToKey[id] then
 		self:ClearBinding(id)
@@ -22,8 +24,8 @@ function SpellBinder:SetBinding(id, key)
 	if keyToSpell[key] and keyToSpell[key] ~= id then
 		self:ClearBinding(keyToSpell[key])
 	end
-	if PhanxBindMacros[key] then
-		PhanxMacroBinder:ClearBinding(PhanxBindMacros[key])
+	if macroProfile[key] then
+		PhanxMacroBinder:ClearBinding(macroProfile[key])
 	end
 
 	spellToKey[id], keyToSpell[key] = key, id
@@ -100,28 +102,33 @@ end
 
 ------------------------------------------------------------------------
 
-function SpellBinder:Initialize()
-	--print(self.name, "Initialize")
-	for key, spell in pairs(self.db) do
+function SpellBinder:SetAllBindings()
+	local profile = self.db[self.db.PROFILE]
+	for key, spell in pairs(profile) do
 		if type(spell) == "string" then
 			local link = GetSpellLink(link)
 			local id = link and strmatch(link, "spell:(%d+)")
 			if id then
-				self.db[key] = id
+				profile[key] = id
 				print("Updated old binding:", key, "->", spell, id)
 			else
-				self.db[key] = nil
+				profile[key] = nil
 				print("Removed old binding:", key, "->", spell)
 			end
 		elseif not GetSpellInfo(spell) then
-			self.db[key] = nil
+			profile[key] = nil
 			print("Removed binding for nonexistent spell:", key, "->", spell)
 		end
 	end
-	for key, spell in pairs(self.db) do
+	for key, spell in pairs(profile) do
 		self:SetBinding(spell, key)
 	end
 	self:SetDB(keyToSpell)
+end
+
+function SpellBinder:Initialize()
+	--print(self.name, "Initialize")
+	self:SetAllBindings()
 
 	self:ClearAllPoints()
 	self:SetParent(SpellBookSpellIconsFrame)
