@@ -263,7 +263,7 @@ end
 
 function prototype:SetProfile(spec)
 	if spec == self.db.PROFILE then return end
-	print("switched from spec", self.db.PROFILE, "to spec", spec)
+	--print(self.name, "switched from spec", self.db.PROFILE, "to spec", spec)
 	self:ClearAllBindings()
 
 	if not self.db[spec] then
@@ -272,12 +272,12 @@ function prototype:SetProfile(spec)
 			new[k] = v
 		end
 		self.db[spec] = new
-		print("new profile")
+		--print(self.name, "new profile")
 	end
 
 	self.db.PROFILE = spec
 	self.profile = self.db[spec]
-	print("set profile")
+	--print(self.name, "set profile")
 	self:SetAllBindings()
 end
 
@@ -312,12 +312,12 @@ function Addon:CreateBinderGroup(name, dbname)
 			for i = 1, #dbMigrations do
 				local mig = dbMigrations[i]
 				if (not db.VERSION or db.VERSION < mig.date) then
-					print("applying migration", mig.date)
+					--print(dbname, "applying migration", mig.date)
 					local newdb = mig.func(db)
 					if not newdb then break end
 					db = newdb
 					db.VERSION = mig.date
-					print("success")
+					--print(dbname, "success")
 				end
 			end
 			_G[dbname] = db
@@ -341,5 +341,3 @@ function Addon:CreateBinderGroup(name, dbname)
 
 	return f
 end
-
-------------------------------------------------------------------------
